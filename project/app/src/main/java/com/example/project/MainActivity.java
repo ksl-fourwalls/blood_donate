@@ -1,11 +1,16 @@
 package com.example.project;
 
 import android.os.Bundle;
+import android.text.Html;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import org.w3c.dom.Text;
 
 /**
 
@@ -28,6 +33,7 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     public void HomePage() {
+        setContentView(R.layout.home_layout);
     }
 
 
