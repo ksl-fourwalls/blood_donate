@@ -4,9 +4,11 @@
     <color name="white">#FFFFFFFF</color>
     <!--colors for modern ui-->
     <color name="whiteTextColor">#fff</color>
-    <color name="primaryTextColor">#D52399</color>
+    <color name="primaryTextColor">#D5236A</color>
     <color name="loginBkColor">#f0f0f0</color>
 
     <!--colros for card-->
     <color name="whiteCardColor">#fff</color>
+    <color name="colorAccent">#613EEA</color>
+
 </resources>

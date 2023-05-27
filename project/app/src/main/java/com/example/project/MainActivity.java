@@ -9,6 +9,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.MaterialToolbar;
 
 import org.w3c.dom.Text;
 
@@ -32,8 +37,19 @@ public class MainActivity extends AppCompatActivity  {
         signupPage();
     }
 
+   //  https://guides.codepath.com/android/Working-with-the-EditText
     public void HomePage() {
-        setContentView(R.layout.home_layout);
+        setContentView(R.layout.side_bar);
+        MaterialToolbar topbarmenu = (MaterialToolbar) findViewById(R.id.topbarmenu);
+        topbarmenu.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DrawerLayout dLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+                dLayout.openDrawer(GravityCompat.START);
+            }
+        });
+
+
     }
 
 

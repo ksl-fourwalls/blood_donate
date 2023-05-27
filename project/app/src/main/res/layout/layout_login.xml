@@ -38,7 +38,8 @@
     <com.google.android.material.textfield.TextInputLayout
         android:labelFor="@+id/editTextEmail"
         style="@style/parent"
-        android:hint="@string/login_email_hint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/loginViewsMargin">
 
         <EditText
@@ -46,18 +47,22 @@
             style="@style/modifiedEditText"
             android:hint="@string/login_email_hint"
             android:inputType="textEmailAddress"
-            android:maxLines="1" />
+            android:importantForAccessibility="no"
+            android:maxLines="1"
+            />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:labelFor="@+id/editTextPassword"
         style="@style/parent"
-        android:hint="@string/login_password_hint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/loginViewsMargin">
 
         <EditText
             android:id="@+id/editTextPassword"
             style="@style/modifiedEditText"
+            android:importantForAccessibility="no"
             android:hint="@string/login_password_hint"
             android:inputType="textPassword"
             android:maxLines="1" />

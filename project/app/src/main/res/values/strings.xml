@@ -17,4 +17,6 @@
             <item>Uranus</item>
             <item>Neptune</item>
         </string-array>
+    <string name="donate_string">Donate</string>
+    <string name="recieve_string">Receive</string>
 </resources>
