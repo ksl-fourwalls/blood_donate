@@ -7,6 +7,6 @@
     <dimen name="loginViewsMargin">20dp</dimen>
 
     <dimen name="signup_text_margin_top">10dp</dimen>
-    <dimen name="box_width">150dp</dimen>
-    <dimen name="box_height">110dp</dimen>
+    <dimen name="box_width">160dp</dimen>
+    <dimen name="box_height">120dp</dimen>
 </resources>

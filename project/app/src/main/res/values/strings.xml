@@ -19,4 +19,5 @@
         </string-array>
     <string name="donate_string">Donate</string>
     <string name="recieve_string">Receive</string>
+    <string name="search">Search</string>
 </resources>

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity=""
+        android:src="@drawable/login_bk" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </LinearLayout>
+
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appBarLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/topbarmenu"
+                style="@style/Widget.MaterialComponents.Toolbar.Primary"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:menu="@menu/emergency_topbar"
+                app:navigationIcon="@drawable/ic_back"
+                app:title="Blood Receiver Appointment" />
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/loginHeader"
+            android:autofillHints="username"
+            android:text="Book Appointment"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="@dimen/loginViewsMargin"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:labelFor="@+id/editTextName"
+            style="@style/parent"
+            android:layout_marginTop="@dimen/loginViewsMargin">
+
+
+            <EditText
+                android:id="@+id/editTextName"
+                style="@style/modifiedEditText"
+                android:hint="Date of Submission"
+                android:importantForAccessibility="no"
+                android:minHeight="48dp"
+                android:inputType="textPersonName"
+                android:layout_marginRight="20dp"
+                android:layout_marginLeft="20dp"
+                android:maxLines="1" />
+
+        </com.google.android.material.textfield.TextInputLayout >
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:labelFor="@+id/BloodGroup"
+            style="@style/parent"
+            android:layout_marginTop="@dimen/loginViewsMargin">
+
+
+            <EditText
+                android:id="@+id/BloodGroup"
+                style="@style/modifiedEditText"
+                android:hint="Blood Group"
+                android:importantForAccessibility="no"
+                android:minHeight="48dp"
+                android:inputType="textPersonName"
+                android:layout_marginRight="20dp"
+                android:layout_marginLeft="20dp"
+                android:maxLines="1" />
+
+        </com.google.android.material.textfield.TextInputLayout >
+
+
+
+        <Button
+            android:id="@+id/DonorAppointment"
+            style="@style/loginButton"
+            android:text="Submit"
+            android:layout_gravity="right"
+            android:layout_marginTop="@dimen/loginViewsMargin"
+            android:layout_marginRight="20dp"/>
+
+
+    </LinearLayout>
+</FrameLayout>

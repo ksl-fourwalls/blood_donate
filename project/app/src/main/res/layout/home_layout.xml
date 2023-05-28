@@ -28,120 +28,7 @@
 
 
     </com.google.android.material.appbar.AppBarLayout>
-    <!--
-    <com.google.android.material.tabs.TabLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appBarLayout2"
-        app:tabContentStart="20dp"
-        app:tabMode="scrollable">
 
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="home" />
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="available" />
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="history" />
-
-    </com.google.android.material.tabs.TabLayout>
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="0dp"
-        android:layout_height="98dp"
-        android:background="@drawable/roundedshape"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="?attr/actionBarTheme"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="208dp"
-        android:layout_height="51dp"
-        android:layout_marginStart="116dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="51dp"
-        android:fontFamily="sans-serif-black"
-        android:textColor="#CCFFFFFF"
-        android:shadowColor="#504B4B"
-        android:shadowDx="4"
-        android:shadowDy="4"
-        android:shadowRadius="4"
-        android:text="default user"
-        android:textAlignment="center"
-        android:textSize="30dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/imageView3"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="58dp"
-        android:layout_height="59dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="7dp"
-        android:layout_marginEnd="18dp"
-        android:layout_marginBottom="19dp"
-        android:src="@drawable/unknown_user"
-        app:layout_constraintBottom_toBottomOf="@+id/toolbar"
-        app:layout_constraintEnd_toStartOf="@+id/textView2"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.692" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/app_name"
-                    android:textAppearance="?attr/textAppearanceTitleMedium" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="@string/login_signup_hint"
-                    android:textAppearance="?attr/textAppearanceBodyMedium"
-                    android:textColor="?android:attr/textColorSecondary" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="@string/signup_login_hint"
-                    android:textAppearance="?attr/textAppearanceBodyMedium"
-                    android:textColor="?android:attr/textColorSecondary" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-        -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/card1"
         android:layout_width="fill_parent"
@@ -215,6 +102,7 @@
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card2"
+            android:onClick="bookdonorsAppointment"
             android:layout_width="@dimen/box_width"
             android:layout_height="@dimen/box_height"
             android:background="@drawable/blood_donation"
@@ -240,6 +128,7 @@
             android:layout_width="@dimen/box_width"
             android:layout_height="@dimen/box_height"
             android:background="@drawable/blood_donation"
+            android:onClick="recieverAppointment"
             app:cardBackgroundColor="#44BFB5"
             app:cardCornerRadius="20dp"
             app:cardElevation="20dp"
@@ -266,6 +155,7 @@
             app:cardCornerRadius="20dp"
             app:cardElevation="30dp"
             app:cardBackgroundColor="#FF0000"
+            android:onClick="emergencyPage"
             app:layout_constraintBottom_toTopOf="@+id/card5"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline6"
@@ -285,6 +175,7 @@
             android:id="@+id/card5"
             android:layout_width="@dimen/box_width"
             android:layout_height="@dimen/box_height"
+            android:onClick="available_bloodgroup"
             app:cardBackgroundColor="@color/white"
             app:cardCornerRadius="20dp"
             app:cardElevation="30dp"

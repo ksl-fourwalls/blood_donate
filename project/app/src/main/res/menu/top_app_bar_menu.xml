@@ -3,16 +3,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/favorite"
-        android:icon="@drawable/ic_favorite"
-        android:title="Favourites"
-        app:showAsAction="ifRoom" />
+        android:id="@+id/search"
+        android:title="Search"
+        android:icon="@drawable/ic_search"
+        android:onClick=""
+        app:showAsAction="ifRoom"
+         />
 
     <item
-        android:id="@+id/search"
-        android:icon="@drawable/ic_search"
-        android:title="Search"
+        android:id="@+id/favorite"
+        android:icon="@drawable/ic_share"
+        android:title="Share"
         app:showAsAction="ifRoom" />
+
+
 
     <item
         android:id="@+id/more"
