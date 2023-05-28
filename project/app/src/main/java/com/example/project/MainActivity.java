@@ -41,13 +41,25 @@ import java.util.HashMap;
 import java.util.Map;
  */
 
+// connect to sqlite https://www.c-sharpcorner.com/UploadFile/88b6e5/sqlitedatabase-connectivity/
+
+
 // https://stackoverflow.com/questions/24742230/keep-scrollview-scroll-position-for-dynamic-content
 public class MainActivity extends AppCompatActivity  {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            Toast.makeText(MainActivity.this, "mysql Driver Found", Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            Toast.makeText(MainActivity.this, "Could not found mysql Driver", Toast.LENGTH_LONG).show();
+        }
         signupPage();
+
     }
 
     @Override
@@ -62,6 +74,8 @@ public class MainActivity extends AppCompatActivity  {
         // Assumes current activity is the searchable activity
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+        searchView.setQueryHint("Search");
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             // Override onQueryTextSubmit method which is call when submit query is searched
             @Override
@@ -120,6 +134,11 @@ public class MainActivity extends AppCompatActivity  {
         };
         listView.setAdapter(listadapter);
 
+    }
+
+    public void searchthings(MenuItem item) {
+        if (item.getItemId() == R.id.search)
+            setContentView(R.layout.search_hospital);
     }
 
     private void setNavigator2Home()
@@ -231,6 +250,8 @@ public class MainActivity extends AppCompatActivity  {
 
     public void signupPage() {
         setContentView(R.layout.activity_main);
+
+
 
         Button button = (Button) findViewById(R.id.cirSignupButton);
         View.OnClickListener call_login_page = new View.OnClickListener() {

@@ -5,9 +5,8 @@
     <item
         android:id="@+id/search"
         android:title="Search"
-        android:icon="@drawable/ic_search"
-        android:onClick=""
         app:showAsAction="ifRoom"
+        app:actionViewClass="android.widget.SearchView"
          />
 
     <item
