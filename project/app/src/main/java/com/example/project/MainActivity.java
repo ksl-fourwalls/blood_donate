@@ -27,6 +27,13 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.w3c.dom.Text;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.util.ArrayList;
 
 /**
@@ -47,17 +54,19 @@ import java.util.Map;
 // https://stackoverflow.com/questions/24742230/keep-scrollview-scroll-position-for-dynamic-content
 public class MainActivity extends AppCompatActivity  {
 
+    final String url = "jdbc:mysql://192.168.xx.xx:3306/hospital";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-
+        HttpURLConnection urlConnection = null;
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-            Toast.makeText(MainActivity.this, "mysql Driver Found", Toast.LENGTH_LONG).show();
-        } catch (Exception e) {
-            Toast.makeText(MainActivity.this, "Could not found mysql Driver", Toast.LENGTH_LONG).show();
+            URL url = new URL("http://www.android.com/");
+            urlConnection = (HttpURLConnection) url.openConnection();
+            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
         }
+        catch (Exception e) {
+
+        }
+
         signupPage();
 
     }
