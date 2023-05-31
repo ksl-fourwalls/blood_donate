@@ -30,8 +30,8 @@ create table register (username varchar(100) NOT NULL, email varchar(255) NOT NU
 
 
 **References**
-[Android Material](https://github.com/material-components/material-components-android/)
-[App Snipp](https://appsnipp.com/category/android/)
-[Blood Donation Images](https://pngtree.com/so/blood-donation)
+[Android Material](https://github.com/material-components/material-components-android/)  
+[App Snipp](https://appsnipp.com/category/android/)  
+[Blood Donation Images](https://pngtree.com/so/blood-donation)  
 
 
