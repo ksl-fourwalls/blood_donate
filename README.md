@@ -17,15 +17,14 @@ use database hospital;
 
 create table register (username varchar(100) NOT NULL, email varchar(255) NOT NULL, phoneno varchar(20) NOT NULL, password varchar(40) NOT NULL);
 ```
-
-<img src=images/img1.png width=20%>
-<img src=images/img2.png width=20%>
-<img src=images/img3.png width=20%>
-<img src=images/img4.png width=20%>
-<img src=images/img5.png width=20%>
-<img src=images/img6.png width=20%>
-<img src=images/img7.png width=20%>
-<img src=images/img8.png width=20%>
+<img src=images/img1.png width=20% style="float: left;">
+<img src=images/img2.png width=20% style="float: left;">
+<img src=images/img3.png width=20% style="float: left;">
+<img src=images/img4.png width=20% style="float: left;">
+<img src=images/img5.png width=20% style="float: left;">
+<img src=images/img6.png width=20% style="float: left;">
+<img src=images/img7.png width=20% style="float: left;">
+<img src=images/img8.png width=20% style="float: left;">
 
 
 
