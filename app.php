@@ -40,11 +40,6 @@ else if (isset($_REQUEST["login"]))
 	echo (mysqli_num_rows($result) == 1) ? "true" : "false";
 }
 
-else if (isset($_REQUEST["hospital"]))
-{
-
-}
-
 
 mysqli_close($conn);
 

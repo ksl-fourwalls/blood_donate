@@ -3,7 +3,11 @@ package com.example.project;
 import android.app.SearchManager;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.renderscript.ScriptGroup;
 import android.text.Html;
+import android.util.EventLog;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -28,13 +32,17 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import org.w3c.dom.Text;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
 
@@ -55,17 +63,16 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity  {
 
     final String url = "jdbc:mysql://192.168.xx.xx:3306/hospital";
+    // Create some member variables for the ExecutorService
+// and for the Handler that will update the UI from the main thread
+    ExecutorService mExecutor = Executors.newSingleThreadExecutor();
+    Handler mHandler = new Handler(Looper.getMainLooper());
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        HttpURLConnection urlConnection = null;
-        try {
-            URL url = new URL("http://www.android.com/");
-            urlConnection = (HttpURLConnection) url.openConnection();
-            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-        }
-        catch (Exception e) {
 
-        }
+
+        super.onCreate(savedInstanceState);
 
         signupPage();
 
@@ -113,6 +120,21 @@ public class MainActivity extends AppCompatActivity  {
         return super.onCreateOptionsMenu(menu);
     }
 
+    static String readStream(InputStream is) {
+        try {
+            ByteArrayOutputStream bo = new ByteArrayOutputStream();
+            int i = is.read();
+            while(i != -1) {
+                bo.write(i);
+                i = is.read();
+            }
+            return bo.toString();
+        } catch (IOException e) {
+            return "";
+        }
+    }
+
+
     public void available_bloodgroup(View v) {
         setContentView(R.layout.available_bloodgroup);
         setNavigator2Home();
@@ -150,7 +172,7 @@ public class MainActivity extends AppCompatActivity  {
             setContentView(R.layout.search_hospital);
     }
 
-    private void setNavigator2Home()
+    public void setNavigator2Home()
     {
         MaterialToolbar materialToolbar = (MaterialToolbar)findViewById(R.id.topbarmenu);
         materialToolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -257,10 +279,64 @@ public class MainActivity extends AppCompatActivity  {
         });
     }
 
-    public void signupPage() {
+    public void processInBg(final String url, final boolean finished) {
+
+        final OnProcessedListener listener = new OnProcessedListener() {
+            @Override
+            public void onProcessed(String result) {
+                // Use the handler so we're not trying to update the UI from the bg thread
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        // Update the UI here
+                        // ...
+                        Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG).show();
+
+                        // If we're done with the ExecutorService, shut it down.
+                        // (If you want to re-use the ExecutorService,
+                        // make sure to shut it down whenever everything's completed
+                        // and you don't need it any more.)
+                        if (finished) {
+                            mExecutor.shutdown();
+                        }
+
+                    }
+                });
+            }
+        };
+        Runnable backgroundRunnable = new Runnable() {
+            @Override
+            public void run() {
+                // Perform your background operation(s) and set the result(s)
+
+                // Use the interface to pass along the result
+                listener.onProcessed("Fucking");
+            }
+        };
+
+        mExecutor.execute(backgroundRunnable);
+
+    }
+        public void signupPage() {
         setContentView(R.layout.activity_main);
+        processInBg("thisstring", false);
 
 
+
+// Create an interface to respond with the result after processing
+
+
+
+
+
+        /*
+          d  try {
+
+        }
+        catch (Exception e) {
+
+        }
+         */
 
         Button button = (Button) findViewById(R.id.cirSignupButton);
         View.OnClickListener call_login_page = new View.OnClickListener() {
@@ -277,4 +353,40 @@ public class MainActivity extends AppCompatActivity  {
 
 
     }
+
+
+}
+/*
+class Task implements Runnable {
+
+    Context c;
+    public Task(Context c) {
+        this.c = c;
+    }
+
+    @Override
+    public void run() {
+        try {
+            reference.get
+
+            URL url = new URL("https://www.google.com");
+            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod("GET");
+            urlConnection.connect();
+            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+            String mystr = MainActivity.readStream(in);
+            Toast.makeText(MainActivity.getContext(), mystr, Toast.LENGTH_LONG).show();
+
+
+        }   catch(Exception e) {
+            Toast.makeText(this.c, e.toString(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+}
+
+ */
+
+interface OnProcessedListener {
+    public void onProcessed(String result);
 }
