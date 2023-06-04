@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Spinner;
@@ -29,6 +30,8 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.io.BufferedInputStream;
@@ -44,37 +47,21 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-/**
-
- import org.w3c.dom.Text;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.HashMap;
-import java.util.Map;
- */
 
 // connect to sqlite https://www.c-sharpcorner.com/UploadFile/88b6e5/sqlitedatabase-connectivity/
-
-
 // https://stackoverflow.com/questions/24742230/keep-scrollview-scroll-position-for-dynamic-content
 public class MainActivity extends AppCompatActivity  {
 
-    final String url = "jdbc:mysql://192.168.xx.xx:3306/hospital";
     // Create some member variables for the ExecutorService
-// and for the Handler that will update the UI from the main thread
+    // and for the Handler that will update the UI from the main thread
     ExecutorService mExecutor = Executors.newSingleThreadExecutor();
     Handler mHandler = new Handler(Looper.getMainLooper());
+    String useremail = null, userpassword = null, username = null, userphoneno = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-
         super.onCreate(savedInstanceState);
-
-        signupPage();
+        signupPage(null);
 
     }
 
@@ -178,7 +165,7 @@ public class MainActivity extends AppCompatActivity  {
         materialToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                HomePage();
+                HomePage(v);
             }
         });
     }
@@ -221,8 +208,17 @@ public class MainActivity extends AppCompatActivity  {
     }
 
    //  https://guides.codepath.com/android/Working-with-the-EditText
-    public void HomePage() {
+    public void HomePage(View v) {
         setContentView(R.layout.side_bar);
+
+        // update text view values
+        TextView usernameTextV = (TextView) findViewById(R.id.username);
+        usernameTextV.setText(username);
+        TextView userphonenoTextV = (TextView) findViewById(R.id.userphoneno) ;
+        userphonenoTextV.setText(userphoneno);
+        TextView useremailTextV = (TextView) findViewById(R.id.useremail);
+        useremailTextV.setText(useremail);
+
 
 
         MaterialToolbar topbarmenu = (MaterialToolbar) findViewById(R.id.topbarmenu);
@@ -253,139 +249,165 @@ public class MainActivity extends AppCompatActivity  {
         }
         else if (itemid == R.id.logout)
         {
+            useremail = null;
+            userpassword = null;
+            userphoneno = null;
+            username = null;
 
+            loginTextView(null);
         }
 
     }
 
 
-        public void LoadLoginPage () {
-        setContentView(R.layout.layout_login);
+
+
+    // call login page
+    public void loginTextView (View v) {
+        if (useremail == null && userpassword == null)
+            setContentView(R.layout.layout_login);
 
         Button loginbutton = (Button) findViewById(R.id.cirLoginButton);
         loginbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                HomePage();
-            }
-        });
+                String email = ((EditText)findViewById(R.id.editTextEmail)).getText().toString();
+                String password = ((EditText)findViewById(R.id.editTextPassword)).getText().toString();
 
-        TextView donthaveaccount = (TextView) findViewById(R.id.notsignedup);
-        donthaveaccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                signupPage();
-            }
-        });
-    }
+                if (email.equals("") || password.equals(""))
+                {
+                    Toast.makeText(MainActivity.this, "fill required details", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                final OnProcessedListener listener = new OnProcessedListener() {
+                    @Override
+                    public void onProcessed(String result) {
+                        // Use the handler so we're not trying to update the UI from the bg thread
+                        mHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (result.substring(0, 4).equals("true")) {
+                                    try {
+                                        JSONObject jObject = new JSONObject(result.substring(5));
 
-    public void processInBg(final String url, final boolean finished) {
+                                        userphoneno = jObject.getString("phoneno");
+                                        userpassword = jObject.getString("password");
+                                        useremail = jObject.getString("email");
+                                        username = jObject.getString("username");
 
-        final OnProcessedListener listener = new OnProcessedListener() {
-            @Override
-            public void onProcessed(String result) {
-                // Use the handler so we're not trying to update the UI from the bg thread
-                mHandler.post(new Runnable() {
+                                    } catch (JSONException ignored) {}
+                                    HomePage(v);
+                                }
+                                //Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+                };
+                Runnable backgroundRunnable = new Runnable() {
                     @Override
                     public void run() {
-                        // Update the UI here
-                        // ...
-                        Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG).show();
+                        try {
+                            // Perform your background operation(s) and set the result(s)
+                            URL url = new URL(String.format("http://192.168.1.3:8000/app.php?login&email=%s&password=%s", email, password));
+                            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                            urlConnection.setRequestMethod("GET");
+                            String result = readStream(new BufferedInputStream(urlConnection.getInputStream()));
 
-                        // If we're done with the ExecutorService, shut it down.
-                        // (If you want to re-use the ExecutorService,
-                        // make sure to shut it down whenever everything's completed
-                        // and you don't need it any more.)
-                        if (finished) {
-                            mExecutor.shutdown();
+                            // Use the interface to pass along the result
+                            listener.onProcessed(result);
                         }
-
+                        catch (Exception e)
+                        {
+                            listener.onProcessed(e.toString());
+                        }
                     }
-                });
+                };
+                mExecutor.execute(backgroundRunnable);
             }
-        };
-        Runnable backgroundRunnable = new Runnable() {
-            @Override
-            public void run() {
-                // Perform your background operation(s) and set the result(s)
-
-                // Use the interface to pass along the result
-                listener.onProcessed("Fucking");
-            }
-        };
-
-        mExecutor.execute(backgroundRunnable);
+        });
 
     }
-        public void signupPage() {
+
+
+/*
+    // If we're done with the ExecutorService, shut it down.
+    // (If you want to re-use the ExecutorService,
+    // make sure to shut it down whenever everything's completed
+    // and you don't need it any more.)
+                        if (finished) {
+        mExecutor.shutdown();
+    }
+ */
+
+        public void signupPage(View v) {
         setContentView(R.layout.activity_main);
-        processInBg("thisstring", false);
-
-
-
-// Create an interface to respond with the result after processing
-
-
-
-
-
-        /*
-          d  try {
-
-        }
-        catch (Exception e) {
-
-        }
-         */
 
         Button button = (Button) findViewById(R.id.cirSignupButton);
         View.OnClickListener call_login_page = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LoadLoginPage();
+
+                String TextName = ((EditText) findViewById(R.id.editTextName)).getText().toString();
+                String password = ((EditText) findViewById(R.id.editTextPassword)).getText().toString();
+                String Email = ((EditText) findViewById(R.id.editTextEmail)).getText().toString();
+                String phoneNumber = ((EditText) findViewById(R.id.editTextMobile)).getText().toString();
+
+                if (TextName.equals("") || password.equals("") || Email.equals("") || phoneNumber.equals("")) {
+                    Toast.makeText(MainActivity.this, "fill required details", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+
+                final OnProcessedListener listener = new OnProcessedListener() {
+                    @Override
+                    public void onProcessed(String result) {
+                        // Use the handler so we're not trying to update the UI from the bg thread
+                        mHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (result.substring(0, 4).equals("true"))
+                                {
+                                    useremail = Email;
+                                    userpassword = password;
+                                    userphoneno = phoneNumber;
+                                    username = TextName;
+
+                                    loginTextView(null);
+                                }
+                            }
+                        });
+                    }
+                };
+
+
+                Runnable backgroundRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            // Perform your background operation(s) and set the result(s)
+                            URL url = new URL(String.format("http://192.168.1.3:8000/app.php?register&phoneno=%s&password=%s&email=%s&username=%s", phoneNumber, password, Email, TextName));
+                            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                            urlConnection.setRequestMethod("GET");
+                            String result = readStream(new BufferedInputStream(urlConnection.getInputStream()));
+
+                            // Use the interface to pass along the result
+                            listener.onProcessed(result);
+                        }
+                        catch (Exception e)
+                        {
+                            listener.onProcessed(e.toString());
+                        }
+
+                    }
+                };
+                mExecutor.execute(backgroundRunnable);
             }
         };
         button.setOnClickListener(call_login_page);
-
-        // call login page
-        TextView loginTextView = (TextView) findViewById(R.id.alreadysignedin);
-        loginTextView.setOnClickListener(call_login_page);
-
-
     }
 
 
 }
-/*
-class Task implements Runnable {
-
-    Context c;
-    public Task(Context c) {
-        this.c = c;
-    }
-
-    @Override
-    public void run() {
-        try {
-            reference.get
-
-            URL url = new URL("https://www.google.com");
-            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestMethod("GET");
-            urlConnection.connect();
-            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-            String mystr = MainActivity.readStream(in);
-            Toast.makeText(MainActivity.getContext(), mystr, Toast.LENGTH_LONG).show();
-
-
-        }   catch(Exception e) {
-            Toast.makeText(this.c, e.toString(), Toast.LENGTH_LONG).show();
-        }
-    }
-
-}
-
- */
 
 interface OnProcessedListener {
     public void onProcessed(String result);

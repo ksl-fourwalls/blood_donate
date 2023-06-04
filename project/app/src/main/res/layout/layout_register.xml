@@ -104,6 +104,7 @@
         style="@style/parent"
         android:textAlignment="textEnd"
         android:textStyle="bold"
+        android:onClick="loginTextView"
         android:textColor="@color/primaryTextColor"
         android:text="@string/signup_login_hint"
         android:layout_marginTop="@dimen/loginViewsMargin"/>

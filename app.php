@@ -12,6 +12,8 @@ if (!$conn) {
 	die("Connection failed: " . $conn->connect_error);
 }
 
+// localhost:8000?register&email=email&password=password&username=username&phoneno=phoneno
+
 // if register page is called
 if (isset($_REQUEST['register'])) 
 {
@@ -32,12 +34,27 @@ if (isset($_REQUEST['register']))
 
 else if (isset($_REQUEST["login"]))
 {
-	$sql = sprintf("SELECT email, password FROM register where email='%s' AND password='%s'", 
+	$sql = sprintf("SELECT * FROM register where email='%s' AND password='%s'", 
 		htmlspecialchars($_REQUEST["email"]), 
 		htmlspecialchars($_REQUEST['password']));
 
 	$result = mysqli_query($conn, $sql);
-	echo (mysqli_num_rows($result) == 1) ? "true" : "false";
+	if (mysqli_num_rows($result) == 1) {
+		$row = mysqli_fetch_array($result, MYSQLI_ASSOC);
+		printf ("true %s\n", json_encode($row));
+
+
+	}
+	else {
+		echo "false";
+	}
+
+	mysqli_free_result($result);
+}
+
+if (isset($_REQUEST['test']))
+{
+	echo "Connected";
 }
 
 
