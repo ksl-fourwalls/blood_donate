@@ -5,9 +5,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.renderscript.ScriptGroup;
-import android.text.Html;
-import android.util.EventLog;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -18,7 +15,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,24 +22,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -121,37 +112,88 @@ public class MainActivity extends AppCompatActivity  {
         }
     }
 
+    public String getUrlData (String targeturl) throws IOException
+    {
+        // Perform your background operation(s) and set the result(s)
+        URL url = new URL(targeturl);
+        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+        urlConnection.setRequestMethod("GET");
+        return readStream(new BufferedInputStream(urlConnection.getInputStream()));
+    }
+
 
     public void available_bloodgroup(View v) {
         setContentView(R.layout.available_bloodgroup);
         setNavigator2Home();
 
-
-        ListView listView = (ListView)findViewById(R.id.emergencylist);
-        ArrayList<String> names = new ArrayList<>();
-        names.add("A+");
-        names.add("B+");
-        names.add("B-");
-        names.add("X");
-        names.add("O");
-
-
-
-        final ArrayAdapter listadapter = new ArrayAdapter(MainActivity.this,
-                android.R.layout.simple_list_item_2, android.R.id.text1, names) {
+        final OnProcessedListener listener = new OnProcessedListener() {
             @Override
-            public View getView (int position, View convertView, ViewGroup parent) {
-                View view = super.getView(position, convertView, parent);
-                TextView text1 = (TextView) view.findViewById(android.R.id.text1);
-                TextView text2 = (TextView) view.findViewById(android.R.id.text2);
+            public void onProcessed(String result) {
+                // Use the handler so we're not trying to update the UI from the bg thread
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
 
-                text1.setText(names.get(position));
-                text2.setText(String.valueOf((int)(Math.random() * 100)));
-                return view;
+                        if (result.substring(0, 4).equals("true")) {
+                            try {
+                                class BloodGroupData {
+                                    public final String BloodGroup;
+                                    public final int count;
+
+                                    public BloodGroupData(String BloodGroup, int count)
+                                    {
+                                        this.BloodGroup = BloodGroup;
+                                        this.count = count;
+                                    }
+                                }
+
+                                ListView listView = (ListView)findViewById(R.id.emergencylist);
+                                JSONObject jObject = new JSONObject(result.substring(5));
+                                Iterator<String> keys = jObject.keys();
+                                ArrayList<BloodGroupData> bloodGroupData = new ArrayList<>();
+
+                                while (keys.hasNext()) {
+                                    String key = keys.next();
+                                    bloodGroupData.add(new BloodGroupData(key, Integer.parseInt(jObject.getString(key))));
+                                }
+
+                                final ArrayAdapter listadapter = new ArrayAdapter(MainActivity.this,
+                                        android.R.layout.simple_list_item_2, android.R.id.text1, bloodGroupData) {
+                                    @Override
+                                    public View getView (int position, View convertView, ViewGroup parent) {
+                                        View view = super.getView(position, convertView, parent);
+                                        TextView text1 = (TextView) view.findViewById(android.R.id.text1);
+                                        TextView text2 = (TextView) view.findViewById(android.R.id.text2);
+
+                                        text1.setText(bloodGroupData.get(position).BloodGroup);
+                                        text2.setText(String.valueOf(bloodGroupData.get(position).count));
+
+                                        return view;
+                                    }
+                                };
+                                listView.setAdapter(listadapter);
+
+                            }catch (JSONException ignored) {}
+                        }
+                    }
+                });
             }
         };
-        listView.setAdapter(listadapter);
-
+        Runnable backgroundRunnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String result = getUrlData(String.format("http://192.168.1.3:8000/app.php?hospital&email=%s&password=%s", useremail, userpassword));
+                    // Use the interface to pass along the result
+                    listener.onProcessed(result);
+                }
+                catch (Exception e)
+                {
+                    listener.onProcessed(e.toString());
+                }
+            }
+        };
+        mExecutor.execute(backgroundRunnable);
     }
 
     public void searchthings(MenuItem item) {
@@ -222,6 +264,7 @@ public class MainActivity extends AppCompatActivity  {
 
 
         MaterialToolbar topbarmenu = (MaterialToolbar) findViewById(R.id.topbarmenu);
+        topbarmenu.setTitle(username);
         topbarmenu.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -308,10 +351,7 @@ public class MainActivity extends AppCompatActivity  {
                     public void run() {
                         try {
                             // Perform your background operation(s) and set the result(s)
-                            URL url = new URL(String.format("http://192.168.1.3:8000/app.php?login&email=%s&password=%s", email, password));
-                            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                            urlConnection.setRequestMethod("GET");
-                            String result = readStream(new BufferedInputStream(urlConnection.getInputStream()));
+                            String result = getUrlData(String.format("http://192.168.1.3:8000/app.php?login&email=%s&password=%s", email, password));
 
                             // Use the interface to pass along the result
                             listener.onProcessed(result);
@@ -378,17 +418,13 @@ public class MainActivity extends AppCompatActivity  {
                         });
                     }
                 };
-
-
                 Runnable backgroundRunnable = new Runnable() {
                     @Override
                     public void run() {
                         try {
                             // Perform your background operation(s) and set the result(s)
-                            URL url = new URL(String.format("http://192.168.1.3:8000/app.php?register&phoneno=%s&password=%s&email=%s&username=%s", phoneNumber, password, Email, TextName));
-                            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                            urlConnection.setRequestMethod("GET");
-                            String result = readStream(new BufferedInputStream(urlConnection.getInputStream()));
+                            String result = getUrlData(String.format("http://192.168.1.3:8000/app.php?register&phoneno=%s&password=%s&email=%s&username=%s",
+                                    phoneNumber, password, Email, TextName));
 
                             // Use the interface to pass along the result
                             listener.onProcessed(result);
