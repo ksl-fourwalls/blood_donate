@@ -35,6 +35,20 @@ create table hospital (bloodgroup int, email varchar(255), address varchar(1024)
 ```
 
 
+---
+Receiver
+- for validation
+    1. email
+    2. password
+- userinfo
+    1. address
+    2. hospital;
+    3. date of receive
+        - today means emergency
+        - not today means not emergency
+
+
+
 **References**  
 [Android Material](https://github.com/material-components/material-components-android/)  
 [App Snipp](https://appsnipp.com/category/android/)  

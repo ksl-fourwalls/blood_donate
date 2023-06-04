@@ -33,8 +33,6 @@ function userExists()
 	return true;
 }
 
-
-
 // localhost:8000?register&email=email&password=password&username=username&phoneno=phoneno
 //
 // if register page is called

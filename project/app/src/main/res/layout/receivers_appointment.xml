@@ -66,41 +66,107 @@
         <com.google.android.material.textfield.TextInputLayout
             android:labelFor="@+id/editTextName"
             style="@style/parent"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp"
             android:layout_marginTop="@dimen/loginViewsMargin">
 
 
             <EditText
                 android:id="@+id/editTextName"
                 style="@style/modifiedEditText"
-                android:hint="Date of Submission"
+                android:hint="Date of Receive"
                 android:importantForAccessibility="no"
                 android:minHeight="48dp"
                 android:inputType="textPersonName"
-                android:layout_marginRight="20dp"
-                android:layout_marginLeft="20dp"
+
                 android:maxLines="1" />
 
         </com.google.android.material.textfield.TextInputLayout >
 
 
         <com.google.android.material.textfield.TextInputLayout
-            android:labelFor="@+id/BloodGroup"
+            android:labelFor="@+id/hospital"
             style="@style/parent"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp"
             android:layout_marginTop="@dimen/loginViewsMargin">
 
 
             <EditText
-                android:id="@+id/BloodGroup"
+                android:id="@+id/hospital"
                 style="@style/modifiedEditText"
-                android:hint="Blood Group"
+                android:hint="Hospital"
                 android:importantForAccessibility="no"
                 android:minHeight="48dp"
                 android:inputType="textPersonName"
-                android:layout_marginRight="20dp"
-                android:layout_marginLeft="20dp"
+
                 android:maxLines="1" />
 
         </com.google.android.material.textfield.TextInputLayout >
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Blood Group"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="20dp">
+        </TextView>
+
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                >
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/a_positive"
+                    />
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/a_negative"
+                    />
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/b_positive"/>
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/b_negative"/>
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ab_positive"/>
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ab_negative"/>
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/o_positive"/>
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_marginRight="40dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/o_negative"/>
+
+            </RadioGroup>
+        </HorizontalScrollView>
 
 
 
