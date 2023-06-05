@@ -32,8 +32,9 @@ create table register (username varchar(100) NOT NULL, email varchar(255) NOT NU
 
 create table hospital(bloodgroup varchar(4), email varchar(255), hospital varchar(1024), FOREIGN KEY(email) REFERENCES register(email));
 
-create table donor (bloodgroup varchar(4), email varchar(255), hospital varchar(1024), FOREIGN KEY(email) REFERENCES register(email));
-create table receiver (bloodgroup varchar(4), email varchar(255), hospital varchar(1024), FOREIGN KEY(email) REFERENCES register(email));
+create table donor (bloodgroup varchar(4), email varchar(255), hospital varchar(1024), dateofsubmit DATE, FOREIGN KEY(email) REFERENCES register(email));
+
+create table receiver (bloodgroup varchar(4), email varchar(255), hospital varchar(1024), dateofreceive DATE, FOREIGN KEY(email) REFERENCES register(email));
 
 ```
 

@@ -42,7 +42,6 @@ import java.util.concurrent.Executors;
 // connect to sqlite https://www.c-sharpcorner.com/UploadFile/88b6e5/sqlitedatabase-connectivity/
 // https://stackoverflow.com/questions/24742230/keep-scrollview-scroll-position-for-dynamic-content
 public class MainActivity extends AppCompatActivity  {
-
     // Create some member variables for the ExecutorService
     // and for the Handler that will update the UI from the main thread
     final ExecutorService mExecutor = Executors.newSingleThreadExecutor();
@@ -115,7 +114,7 @@ public class MainActivity extends AppCompatActivity  {
 
 
     // run process in background
-    public void process_bg(final userurl, OnProcessedListener listener)
+    public void process_bg(final String targeturl, OnProcessedListener listener)
     {
         Runnable backgroundRunnable = new Runnable() {
             @Override
@@ -142,8 +141,7 @@ public class MainActivity extends AppCompatActivity  {
     public void available_bloodgroup(View v) {
         setContentView(R.layout.available_bloodgroup);
         setNavigator2Home();
-	process_bg(String.format("http://%s:8000/app.php?hospital&email=%s&password=%s", 
-				ip, useremail, userpassword),
+        process_bg(String.format("http://%s:8000/app.php?hospital&email=%s&password=%s", ip, useremail, userpassword),
 			new OnProcessedListener() {
 				@Override
 				public void onProcessed(String result) {
@@ -222,7 +220,7 @@ public class MainActivity extends AppCompatActivity  {
         setNavigator2Home();
 
 	process_bg(String.format("http://%s:8000/app.php?emergency&email=%s&password=%s", 
-				useremail, userpassword), new OnProcessedListener() {
+				ip, useremail, userpassword), new OnProcessedListener() {
             @Override
             public void onProcessed(String result) {
                 // Use the handler so we're not trying to update the UI from the bg thread
@@ -247,7 +245,7 @@ public class MainActivity extends AppCompatActivity  {
 
 						while (keys.hasNext()) {
 							String key = keys.next();
-							emergency_needed.add(new EmergencyNeeded(key, Integer.parseInt(jObject.getString(key))));
+							emergency_needed.add(new EmergencyNeeded(key, jObject.getString(key)));
 						}
 
 						// parse two things first hospital name and blood group
@@ -261,11 +259,11 @@ public class MainActivity extends AppCompatActivity  {
 								TextView text2 = (TextView) view.findViewById(android.R.id.text2);
 
 								// set hospital name and bloodgroup as listfield
-								text1.setText(bloodgroupdata.get(position).hospitalname);
-								text2.setText(bloodgroupdata.get(position).bloodgroup);
+								text1.setText(emergency_needed.get(position).hospitalname);
+								text2.setText(emergency_needed.get(position).bloodgroup);
 								return view;
 							}
-						}
+						};
 						listView.setAdapter(listadapter);
 					}
 					catch (Exception e) { }
@@ -319,8 +317,9 @@ public class MainActivity extends AppCompatActivity  {
 		@Override
 		public void onProcessed(String result) {
 			mHandler.post(new Runnable() {
-				// String Date = ((EditText) findViewById(R.id.))
-			})
+                @Override
+                public void run() {}
+			});
 		}
 	});
     }
@@ -335,8 +334,9 @@ public class MainActivity extends AppCompatActivity  {
 		@Override
 		public void onProcessed(String result) {
 			mHandler.post(new Runnable() {
-				// String Date = ((EditText) findViewById(R.id.))
-			})
+                @Override
+                public void run() {}
+			});
 		}
 	});
     }

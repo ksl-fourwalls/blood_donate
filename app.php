@@ -90,7 +90,7 @@ else if (isset($_REQUEST['hospital']))
 				$bloodgroupdata[$row["bloodgroup"]] = $row["total"];
 			}
 		}
-		printf("true %s", json_encode($blooddata));
+		printf("true %s", json_encode($bloodgroupdata));
 	}
 	else {
 		echo "false";
@@ -116,9 +116,26 @@ else if (isset($_REQUEST['emergency']))
 		}
 		printf("true %s", json_encode($emergencyneeded));
 	}
-	else { "false"; }
+	else { echo "false"; }
 }
 
+else if (isset($_REQUEST['donor']))
+{
+	if (userExists()) {
+		$sql = sprintf("INSERT INTO donor VALUES (email='%s', bloodgroup='%s', hospital='%s', dateofsubmit='%s')",
+			$_REQUEST['email'], $_REQUEST['bloodgroup'], $_REQUEST['hospital'], $_REQUEST['dateofsubmit']);
+		mysqli_query($conn, $sql);
+	}
+}
+
+else if (isset($_REQUEST['receiver']))
+{
+	if (userExists()) {
+		$sql = sprintf("INSERT INTO donor VALUES (email='%s', bloodgroup='%s', hospital='%s', dateofsubmit='%s')",
+			$_REQUEST['email'], $_REQUEST['bloodgroup'], $_REQUEST['hospital'], $_REQUEST['dateofsubmit']);
+		mysqli_query($conn, $sql);
+	}
+}
 // update hospital table
 else if (isset($_REQUEST['adminuser']))
 {
