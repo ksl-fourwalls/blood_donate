@@ -1,5 +1,4 @@
 <?php
-
 $servername = "localhost";
 $username = "user";
 $password = "password";
@@ -122,8 +121,6 @@ else if (isset($_REQUEST['emergency']))
 else if (isset($_REQUEST['donor']))
 {
 	if (userExists()) {
-		$bloodgroup = htmlspecialchars($_REQUEST['bloodgroup']);
-
 		$sql = sprintf("INSERT INTO donor(bloodgroup, email, hospital, dateofsubmit) SELECT '%s',email, '%s', '%s' FROM register  WHERE email='%s'",
 			$_REQUEST['bloodgroup'], $_REQUEST['hospitalname'], $_REQUEST['dateofsubmit'], $_REQUEST['email']);
 		mysqli_query($conn, $sql);
@@ -135,6 +132,15 @@ else if (isset($_REQUEST['receiver']))
 	if (userExists()) {
 		$sql = sprintf("INSERT INTO receiver(bloodgroup, email, hospital, dateofreceive) SELECT '%s',email, '%s', '%s' FROM register  WHERE email='%s'",
 			$_REQUEST['bloodgroup'], $_REQUEST['hospitalname'], $_REQUEST['dateofreceive'], $_REQUEST['email']);
+		mysqli_query($conn, $sql);
+	}
+}
+
+else if (isset($_REQUEST['reset']))
+{
+	if (userExists())
+	{
+		$sql = sprintf("update register set password='%s' where email='%s'", $_REQUEST['newpassword'], $_REQUEST['email']);
 		mysqli_query($conn, $sql);
 	}
 }

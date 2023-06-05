@@ -83,6 +83,18 @@ public class MainActivity extends AppCompatActivity  {
         }
     }
 
+    @Override
+    public void onBackPressed()
+    {
+	    if (storeView != null)
+	    {
+		MaterialToolbar materialToolbar = (MaterialToolbar)findViewById(R.id.topbarmenu);
+                materialToolbar.removeView(materialToolbar.getChildAt(1));
+                materialToolbar.addView(storeView);
+                storeView = null;
+	    }
+    }
+
 
     // run process in background
     public void process_bg(final String targeturl, OnProcessedListener listener)
@@ -170,9 +182,9 @@ public class MainActivity extends AppCompatActivity  {
 
 
     public void searchthings(MenuItem item) {
-            MaterialToolbar materialToolbar = (MaterialToolbar)findViewById(R.id.topbarmenu);
 
             if (storeView == null) {
+                MaterialToolbar materialToolbar = (MaterialToolbar)findViewById(R.id.topbarmenu);
 
                 AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appBarLayout2);
                 AutoCompleteTextView autoCompleteTextView = new AutoCompleteTextView(MainActivity.this);
@@ -190,13 +202,6 @@ public class MainActivity extends AppCompatActivity  {
                 // remove view add new view
                 materialToolbar.removeView(storeView);
                 materialToolbar.addView(autoCompleteTextView, 1);
-            }
-
-            else
-            {
-                materialToolbar.removeView(materialToolbar.getChildAt(1));
-                materialToolbar.addView(storeView);
-                storeView = null;
             }
     }
 
@@ -286,6 +291,28 @@ public class MainActivity extends AppCompatActivity  {
     protected void ChangePassword() {
         setContentView(R.layout.reset_password);
 
+        Button submitButton = (Button) findViewById(R.id.changepassword);
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String oldPassword = ((EditText) findViewById(R.id.oldpassword)).getText().toString();
+                String newPassword = ((EditText) findViewById(R.id.newpassword)).getText().toString();
+
+                process_bg(String.format("http://%s:8000/app.php?reset&email=%s&password=%s&newpassword=%s", ip, useremail, oldPassword, newPassword),
+                        new OnProcessedListener() {
+                            @Override
+                            public void onProcessed(String result) {
+                                mHandler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        userpassword = newPassword;
+                                        HomePage(v);
+                                    }
+                                });
+                            }
+                        });
+            }
+        });
     }
 
    //  https://guides.codepath.com/android/Working-with-the-EditText
