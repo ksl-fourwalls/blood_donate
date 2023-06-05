@@ -31,6 +31,8 @@ create table register (username varchar(100) NOT NULL, email varchar(255) NOT NU
     <img src=images/img11.png width=30% style="float: left;">
 </div>
 
+
+![](images/web-service.png)
 ```
 
 create table hospital(bloodgroup varchar(4), email varchar(255), hospital varchar(1024), FOREIGN KEY(email) REFERENCES register(email));

@@ -88,10 +88,10 @@ public class MainActivity extends AppCompatActivity  {
     {
 	    if (storeView != null)
 	    {
-		MaterialToolbar materialToolbar = (MaterialToolbar)findViewById(R.id.topbarmenu);
-                materialToolbar.removeView(materialToolbar.getChildAt(1));
-                materialToolbar.addView(storeView);
-                storeView = null;
+            MaterialToolbar materialToolbar = (MaterialToolbar)findViewById(R.id.topbarmenu);
+            materialToolbar.removeView(materialToolbar.getChildAt(1));
+            materialToolbar.addView(storeView);
+            storeView = null;
 	    }
     }
 
