@@ -15,7 +15,7 @@ create database hospital;
 
 use database hospital;
 
-create table register (username varchar(100) NOT NULL, email varchar(255) NOT NULL, phoneno varchar(20) NOT NULL, password varchar(40) NOT NULL);
+create table register (username varchar(100) NOT NULL, email varchar(255) NOT NULL, phoneno varchar(20) NOT NULL, password varchar(40) NOT NULL, PRIMARY KEY(email));
 ```
 <div style="display: block;">
     <img src=images/img1.png width=30% style="float: left;">
@@ -30,7 +30,10 @@ create table register (username varchar(100) NOT NULL, email varchar(255) NOT NU
 
 ```
 
-create table hospital (bloodgroup int, email varchar(255), address varchar(1024), dateofsubmission DATE);
+create table hospital(bloodgroup varchar(4), email varchar(255), hospital varchar(1024), FOREIGN KEY(email) REFERENCES register(email));
+
+create table donor (bloodgroup varchar(4), email varchar(255), hospital varchar(1024), FOREIGN KEY(email) REFERENCES register(email));
+create table receiver (bloodgroup varchar(4), email varchar(255), hospital varchar(1024), FOREIGN KEY(email) REFERENCES register(email));
 
 ```
 

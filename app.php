@@ -97,6 +97,19 @@ else if (isset($_REQUEST['hospital']))
 	}
 }
 
+else if (isset($_REQUEST['emergency']))
+{
+	if (userExists())
+	{
+	}
+}
+
+// update hospital table
+else if (isset($_REQUEST['adminuser']))
+{
+
+}
+
 else if (isset($_REQUEST['test']))
 {
 	echo "Connected";

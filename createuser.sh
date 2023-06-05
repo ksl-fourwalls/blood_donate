@@ -1,3 +1,6 @@
+#!/bin/bash
+
+# generate userdata for registeration
 for i in {1..100};
 do
 	email="$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-6} | head -n 1)@gmail.com";
@@ -7,3 +10,5 @@ do
 	 
 	curl  -s "http://localhost:8000/app.php?register&email=$email&password=$password&username=$username&phoneno=$phoneno" > /dev/null
 done
+
+
