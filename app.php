@@ -82,12 +82,12 @@ else if (isset($_REQUEST['hospital']))
 		$sql = sprintf("SELECT bloodgroup, COUNT(*) as total FROM hospital GROUP BY bloodgroup");
 		$result = mysqli_query($conn, $sql);
 
-		$blooddata = array();
+		$bloodgroupdata = array();
 		if (mysqli_num_rows($result) > 0)
 		{
 			$rows = mysqli_fetch_all($result, MYSQLI_ASSOC);
 			foreach ($rows as $row) {
-				$blooddata[$row["bloodgroup"]] = $row["total"];
+				$bloodgroupdata[$row["bloodgroup"]] = $row["total"];
 			}
 		}
 		printf("true %s", json_encode($blooddata));
@@ -101,7 +101,22 @@ else if (isset($_REQUEST['emergency']))
 {
 	if (userExists())
 	{
+		$sql = sprintf("SELECT hospital, bloodgroup FROM receiver"); 
+		$result = mysqli_query($conn, $sql);
+
+		$emergencyneeded = array();
+
+		if (mysqli_num_rows($result) > 0)
+		{
+
+			$rows = mysqli_fetch_all($result, MYSQLI_ASSOC);
+			foreach($rows as $row) {
+				$emergencyneeded[$row["hospital"]] = $row["bloodgroup"];
+			}
+		}
+		printf("true %s", json_encode($emergencyneeded));
 	}
+	else { "false"; }
 }
 
 // update hospital table

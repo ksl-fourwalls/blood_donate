@@ -45,8 +45,9 @@ public class MainActivity extends AppCompatActivity  {
 
     // Create some member variables for the ExecutorService
     // and for the Handler that will update the UI from the main thread
-    ExecutorService mExecutor = Executors.newSingleThreadExecutor();
-    Handler mHandler = new Handler(Looper.getMainLooper());
+    final ExecutorService mExecutor = Executors.newSingleThreadExecutor();
+    final Handler mHandler = new Handler(Looper.getMainLooper());
+
     String useremail = null, userpassword = null, username = null, userphoneno = null;
     final String ip = "192.168.1.3";
 
@@ -54,7 +55,6 @@ public class MainActivity extends AppCompatActivity  {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         signupPage(null);
-
     }
 
     @Override
@@ -113,21 +113,10 @@ public class MainActivity extends AppCompatActivity  {
         }
     }
 
-    public String getUrlData (String targeturl) throws IOException
-    {
-    }
-
 
     // run process in background
-    public void process_bg(final userurl, Runnable handlerCode)
+    public void process_bg(final userurl, OnProcessedListener listener)
     {
-        final OnProcessedListener listener = new OnProcessedListener() {
-            @Override
-            public void onProcessed(String result) {
-                // Use the handler so we're not trying to update the UI from the bg thread
-                mHandler.post(handlerCode);
-	    }
-	}
         Runnable backgroundRunnable = new Runnable() {
             @Override
             public void run() {
@@ -154,52 +143,58 @@ public class MainActivity extends AppCompatActivity  {
         setContentView(R.layout.available_bloodgroup);
         setNavigator2Home();
 	process_bg(String.format("http://%s:8000/app.php?hospital&email=%s&password=%s", 
-				ip, useremail, userpassword), new Runnable() {
-	    @Override
-	    public void run() {
+				ip, useremail, userpassword),
+			new OnProcessedListener() {
+				@Override
+				public void onProcessed(String result) {
+					// Use the handler so we're not trying to update the UI from the bg thread
+					mHandler.post(new Runnable() {
+						@Override
+						public void run() {
 
-		if (result.substring(0, 4).equals("true")) {
-		    try {
-			class BloodGroupData {
-			    public final String BloodGroup;
-			    public final int count;
+							if (result.substring(0, 4).equals("true")) {
+								try {
+									class BloodGroupData {
+										public final String BloodGroup, count;
 
-			    public BloodGroupData(String BloodGroup, int count)
-			    {
-				this.BloodGroup = BloodGroup;
-				this.count = count;
-			    }
-			}
+										public BloodGroupData(String BloodGroup, int count)
+										{
+											this.BloodGroup = BloodGroup;
+											this.count = String.valueOf(count);
+										}
+									}
 
-			ListView listView = (ListView)findViewById(R.id.emergencylist);
-			JSONObject jObject = new JSONObject(result.substring(5));
-			Iterator<String> keys = jObject.keys();
-			ArrayList<BloodGroupData> bloodGroupData = new ArrayList<>();
+									ListView listView = (ListView)findViewById(R.id.emergencylist);
+									JSONObject jObject = new JSONObject(result.substring(5));
+									Iterator<String> keys = jObject.keys();
+									ArrayList<BloodGroupData> bloodGroupData = new ArrayList<>();
 
-			while (keys.hasNext()) {
-			    String key = keys.next();
-			    bloodGroupData.add(new BloodGroupData(key, Integer.parseInt(jObject.getString(key))));
-			}
+									while (keys.hasNext()) {
+										String key = keys.next();
+										bloodGroupData.add(new BloodGroupData(key, Integer.parseInt(jObject.getString(key))));
+									}
 
-			final ArrayAdapter listadapter = new ArrayAdapter(MainActivity.this,
-				android.R.layout.simple_list_item_2, android.R.id.text1, bloodGroupData) {
-			    @Override
-			    public View getView (int position, View convertView, ViewGroup parent) {
-				View view = super.getView(position, convertView, parent);
-				TextView text1 = (TextView) view.findViewById(android.R.id.text1);
-				TextView text2 = (TextView) view.findViewById(android.R.id.text2);
+									final ArrayAdapter listadapter = new ArrayAdapter(MainActivity.this,
+											android.R.layout.simple_list_item_2, android.R.id.text1, bloodGroupData) {
+										@Override
+										public View getView (int position, View convertView, ViewGroup parent) {
+											View view = super.getView(position, convertView, parent);
+											TextView text1 = (TextView) view.findViewById(android.R.id.text1);
+											TextView text2 = (TextView) view.findViewById(android.R.id.text2);
 
-				text1.setText(bloodGroupData.get(position).BloodGroup);
-				text2.setText(String.valueOf(bloodGroupData.get(position).count));
+											text1.setText(bloodGroupData.get(position).BloodGroup);
+											text2.setText(bloodGroupData.get(position).count);
 
-				return view;
-			    }
-			};
-			listView.setAdapter(listadapter);
+											return view;
+										}
+									};
+									listView.setAdapter(listadapter);
 
-		    }catch (JSONException ignored) {}
-		}
-	    }
+								}catch (JSONException ignored) {}
+							}
+						}
+					});
+				}
 	});
     }
 
@@ -219,35 +214,66 @@ public class MainActivity extends AppCompatActivity  {
         });
     }
 
+
+
+    // emergency page
     public void emergencyPage(View v) {
         setContentView(R.layout.emergency_needed);
         setNavigator2Home();
 
-        ListView listView = (ListView)findViewById(R.id.emergencylist);
-        ArrayList<String> names = new ArrayList<>();
-        names.add("test");
-
-        for (int idx = 0; idx < 100; idx++)
-        {
-            names.add("fucker");
-        }
-
-        final ArrayAdapter listadapter = new ArrayAdapter(MainActivity.this,
-                android.R.layout.simple_list_item_2, android.R.id.text1, names) {
+	process_bg(String.format("http://%s:8000/app.php?emergency&email=%s&password=%s", 
+				useremail, userpassword), new OnProcessedListener() {
             @Override
-            public View getView (int position, View convertView, ViewGroup parent) {
-                View view = super.getView(position, convertView, parent);
-                TextView text1 = (TextView) view.findViewById(android.R.id.text1);
-                TextView text2 = (TextView) view.findViewById(android.R.id.text2);
+            public void onProcessed(String result) {
+                // Use the handler so we're not trying to update the UI from the bg thread
+		    mHandler.post(new Runnable() {
+			    @Override
+			    public void run() {
+				    class EmergencyNeeded {
+					    final String hospitalname, bloodgroup;
+					    public EmergencyNeeded(String hospitalname, String bloodgroup)
+					    {
+						    this.hospitalname = hospitalname;
+						    this.bloodgroup = bloodgroup;
+					    }
+				    }
 
-                text1.setText("fucker");
-                text2.setText("A+ A- B+ B-");
-                return view;
-            }
-        };
-        listView.setAdapter(listadapter);
+				    if (result.substring(0, 4).equals("true")) 
+				    {
+				        try {
+						JSONObject jObject = new JSONObject(result.substring(5));
+						Iterator<String> keys = jObject.keys();
+						ArrayList<EmergencyNeeded> emergency_needed = new ArrayList<>();
 
+						while (keys.hasNext()) {
+							String key = keys.next();
+							emergency_needed.add(new EmergencyNeeded(key, Integer.parseInt(jObject.getString(key))));
+						}
 
+						// parse two things first hospital name and blood group
+						ListView listView = (ListView)findViewById(R.id.emergencylist);
+						final ArrayAdapter listadapter = new ArrayAdapter(MainActivity.this,
+								android.R.layout.simple_list_item_2, android.R.id.text1, emergency_needed) {
+							@Override
+							public View getView (int position, View convertView, ViewGroup parent) {
+								View view = super.getView(position, convertView, parent);
+								TextView text1 = (TextView) view.findViewById(android.R.id.text1);
+								TextView text2 = (TextView) view.findViewById(android.R.id.text2);
+
+								// set hospital name and bloodgroup as listfield
+								text1.setText(bloodgroupdata.get(position).hospitalname);
+								text2.setText(bloodgroupdata.get(position).bloodgroup);
+								return view;
+							}
+						}
+						listView.setAdapter(listadapter);
+					}
+					catch (Exception e) { }
+				    }
+			    } 
+		    });
+	    }
+	});
     }
 
 
@@ -286,11 +312,33 @@ public class MainActivity extends AppCompatActivity  {
     public void bookdonorsAppointment(View v) {
         setContentView(R.layout.donors_appointment);
         setNavigator2Home();
+
+	process_bg(String.format("http://%s:8000/app.php?donor&email=%s&password=%s", 
+				ip, useremail, userpassword), new OnProcessedListener() {
+
+		@Override
+		public void onProcessed(String result) {
+			mHandler.post(new Runnable() {
+				// String Date = ((EditText) findViewById(R.id.))
+			})
+		}
+	});
     }
 
     public void recieverAppointment(View v) {
         setContentView(R.layout.receivers_appointment);
         setNavigator2Home();
+
+	process_bg(String.format("http://%s:8000/app.php?receiver&email=%s&password=%s", 
+				ip, useremail, userpassword), new OnProcessedListener() {
+
+		@Override
+		public void onProcessed(String result) {
+			mHandler.post(new Runnable() {
+				// String Date = ((EditText) findViewById(R.id.))
+			})
+		}
+	});
     }
 
     public void showMsgDirectMenuXml(MenuItem item) {
@@ -307,7 +355,6 @@ public class MainActivity extends AppCompatActivity  {
 
             loginTextView(null);
         }
-
     }
 
 
@@ -332,22 +379,27 @@ public class MainActivity extends AppCompatActivity  {
                 }
 
 		process_bg(String.format("http://%s:8000/app.php?login&email=%s&password=%s", ip, email, password), 
-				new Runnable() {
+				new OnProcessedListener() {
 		    @Override
-		    public void run() {
-			if (result.substring(0, 4).equals("true")) {
-			    try {
-				JSONObject jObject = new JSONObject(result.substring(5));
+		    public void onProcessed(String result) {
+			// Use the handler so we're not trying to update the UI from the bg thread
+			mHandler.post(new Runnable() {
+			    @Override
+			    public void run() {
+				if (result.substring(0, 4).equals("true")) {
+				    try {
+					JSONObject jObject = new JSONObject(result.substring(5));
 
-				userphoneno = jObject.getString("phoneno");
-				userpassword = jObject.getString("password");
-				useremail = jObject.getString("email");
-				username = jObject.getString("username");
+					userphoneno = jObject.getString("phoneno");
+					userpassword = jObject.getString("password");
+					useremail = jObject.getString("email");
+					username = jObject.getString("username");
 
-			    } catch (JSONException ignored) {}
-			    HomePage(v);
-			}
-			//Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG).show();
+				    } catch (JSONException ignored) {}
+				    HomePage(v);
+				}
+			    }
+			});
 		    }
 		});
             }
@@ -385,18 +437,24 @@ public class MainActivity extends AppCompatActivity  {
 
 
 		process_bg(String.format("http://%s:8000/app.php?register&phoneno=%s&password=%s&email=%s&username=%s",
-                                   ip, phoneNumber, password, Email, TextName),  new Runnable() {
+                                   ip, phoneNumber, password, Email, TextName),  new OnProcessedListener() {
 		    @Override
-		    public void run() {
-			if (result.substring(0, 4).equals("true"))
-			{
-			    useremail = Email;
-			    userpassword = password;
-			    userphoneno = phoneNumber;
-			    username = TextName;
+		    public void onProcessed(String result) {
+			// Use the handler so we're not trying to update the UI from the bg thread
+			mHandler.post(new Runnable() {
+			    @Override
+			    public void run() {
+				if (result.substring(0, 4).equals("true"))
+				{
+				    useremail = Email;
+				    userpassword = password;
+				    userphoneno = phoneNumber;
+				    username = TextName;
 
-			    loginTextView(null);
-			}
+				    loginTextView(null);
+				}
+			    }
+			});
 		    }
 		});
             }
