@@ -26,6 +26,9 @@ create table register (username varchar(100) NOT NULL, email varchar(255) NOT NU
     <img src=images/img6.png width=30% style="float: left;">
     <img src=images/img7.png width=30% style="float: left;">
     <img src=images/img8.png width=30% style="float: left;">
+    <img src=images/img9.png width=30% style="float: left;">
+    <img src=images/img10.png width=30% style="float: left;">
+    <img src=images/img11.png width=30% style="float: left;">
 </div>
 
 ```
