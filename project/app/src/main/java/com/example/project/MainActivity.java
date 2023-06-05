@@ -508,6 +508,9 @@ public class MainActivity extends AppCompatActivity  {
 				    } catch (JSONException ignored) {}
 				    HomePage(v);
 				}
+				else {
+					Toast.makeText(MainActivity.this, "Invalid cred", Toast.LENGTH_LONG).show();
+				}
 			    }
 			});
 		    }
