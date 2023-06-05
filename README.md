@@ -49,13 +49,21 @@ INSERT INTO hospital(bloodgroup, email, hospital) SELECT "A+",email, "Bavishi Ey
 ![](images/web-service.png)
 
 
----
-Receiver
+Donor 
 - for validation
     1. email
     2. password
 - userinfo
-    1. address
+    1. email
+    2. hospital
+    3. date of submit
+
+Receiver  
+- for validation
+    1. email
+    2. password
+- userinfo
+    1. email
     2. hospital;
     3. date of receive
         - today means emergency
