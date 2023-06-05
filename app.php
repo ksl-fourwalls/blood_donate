@@ -5,6 +5,7 @@ $username = "user";
 $password = "password";
 $dbname = "hospital";
 
+// TODO: Make Resistant from SQL Injection
 // Create connection
 $conn = mysqli_connect($servername, $username, $password, $dbname);
 
@@ -15,8 +16,8 @@ if (!$conn) {
 
 function userExists()
 {
-	$email = htmlspecialchars($_REQUEST["email"]);
-	$password = htmlspecialchars($_REQUEST["password"]);
+	$email = $_REQUEST["email"];
+	$password = $_REQUEST["password"];
 
 	if ($email == "" && $password == "")
 		return false;
@@ -101,14 +102,13 @@ else if (isset($_REQUEST['emergency']))
 {
 	if (userExists())
 	{
-		$sql = sprintf("SELECT hospital, bloodgroup FROM receiver"); 
+		$sql = sprintf("SELECT hospital, bloodgroup FROM receiver where dateofreceive='%s'", date('Y-m-d')); 
 		$result = mysqli_query($conn, $sql);
 
 		$emergencyneeded = array();
 
 		if (mysqli_num_rows($result) > 0)
 		{
-
 			$rows = mysqli_fetch_all($result, MYSQLI_ASSOC);
 			foreach($rows as $row) {
 				$emergencyneeded[$row["hospital"]] = $row["bloodgroup"];
@@ -122,8 +122,10 @@ else if (isset($_REQUEST['emergency']))
 else if (isset($_REQUEST['donor']))
 {
 	if (userExists()) {
-		$sql = sprintf("INSERT INTO donor VALUES (email='%s', bloodgroup='%s', hospital='%s', dateofsubmit='%s')",
-			$_REQUEST['email'], $_REQUEST['bloodgroup'], $_REQUEST['hospital'], $_REQUEST['dateofsubmit']);
+		$bloodgroup = htmlspecialchars($_REQUEST['bloodgroup']);
+
+		$sql = sprintf("INSERT INTO donor(bloodgroup, email, hospital, dateofsubmit) SELECT '%s',email, '%s', '%s' FROM register  WHERE email='%s'",
+			$_REQUEST['bloodgroup'], $_REQUEST['hospitalname'], $_REQUEST['dateofsubmit'], $_REQUEST['email']);
 		mysqli_query($conn, $sql);
 	}
 }
@@ -131,11 +133,12 @@ else if (isset($_REQUEST['donor']))
 else if (isset($_REQUEST['receiver']))
 {
 	if (userExists()) {
-		$sql = sprintf("INSERT INTO donor VALUES (email='%s', bloodgroup='%s', hospital='%s', dateofsubmit='%s')",
-			$_REQUEST['email'], $_REQUEST['bloodgroup'], $_REQUEST['hospital'], $_REQUEST['dateofsubmit']);
+		$sql = sprintf("INSERT INTO receiver(bloodgroup, email, hospital, dateofreceive) SELECT '%s',email, '%s', '%s' FROM register  WHERE email='%s'",
+			$_REQUEST['bloodgroup'], $_REQUEST['hospitalname'], $_REQUEST['dateofreceive'], $_REQUEST['email']);
 		mysqli_query($conn, $sql);
 	}
 }
+
 // update hospital table
 else if (isset($_REQUEST['adminuser']))
 {

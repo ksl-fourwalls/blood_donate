@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -190,6 +191,7 @@ public class MainActivity extends AppCompatActivity  {
                 materialToolbar.removeView(storeView);
                 materialToolbar.addView(autoCompleteTextView, 1);
             }
+
             else
             {
                 materialToolbar.removeView(materialToolbar.getChildAt(1));
@@ -347,6 +349,33 @@ public class MainActivity extends AppCompatActivity  {
         DateDialogCreate((EditText) findViewById(R.id.submitdate));
         // show hospital name
         AutoHospitals((AutoCompleteTextView) findViewById(R.id.hospital));
+
+        Button submitButton = (Button) findViewById(R.id.DonorAppointment);
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String dateofsubmit = ((EditText)findViewById(R.id.submitdate)).getText().toString();
+                String hospitalname = ((AutoCompleteTextView)findViewById(R.id.hospital)).getText().toString();
+                RadioGroup radioButtonGroup = (RadioGroup)findViewById(R.id.whichbloodgroup);
+                int idx = radioButtonGroup.indexOfChild(radioButtonGroup.findViewById(radioButtonGroup.getCheckedRadioButtonId()));
+                String selectedtext = ((RadioButton) radioButtonGroup.getChildAt(idx)).getText().toString();
+
+                process_bg(String.format("http://%s:8000/app.php?donor&email=%s&password=%sdateofsubmit=%s&hospitalname=%s&bloodgroup=%s",
+                        ip, useremail, userpassword, dateofsubmit, hospitalname, selectedtext), new OnProcessedListener() {
+
+                    @Override
+                    public void onProcessed(String result) {
+                        mHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(MainActivity.this, "Submitted", Toast.LENGTH_SHORT).show();
+                                HomePage(v);
+                            }
+                        });
+                    }
+                });
+            }
+        });
     }
 
 
@@ -371,14 +400,17 @@ public class MainActivity extends AppCompatActivity  {
                 int idx = radioButtonGroup.indexOfChild(radioButtonGroup.findViewById(radioButtonGroup.getCheckedRadioButtonId()));
                 String selectedtext = ((RadioButton) radioButtonGroup.getChildAt(idx)).getText().toString();
 
-                process_bg(String.format("http://%s:8000/app.php?receiver&email=%s&password=%sdateofreceive=%s&hospitalname=%s&bloodgroup",
+                process_bg(String.format("http://%s:8000/app.php?receiver&email=%s&password=%s&dateofreceive=%s&hospitalname=%s&bloodgroup=%s",
                         ip, useremail, userpassword, dateofreceive, hospitalname, selectedtext), new OnProcessedListener() {
 
                     @Override
                     public void onProcessed(String result) {
                         mHandler.post(new Runnable() {
                             @Override
-                            public void run() {}
+                            public void run() {
+                                Toast.makeText(MainActivity.this, "Submitted", Toast.LENGTH_SHORT).show();
+                                HomePage(v);
+                            }
                         });
                     }
                 });
