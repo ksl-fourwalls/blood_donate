@@ -32,6 +32,7 @@ create table register (username varchar(100) NOT NULL, email varchar(255) NOT NU
 </div>
 
 
+**create hospital, donor, receiver table**  
 ```
 
 create table hospital(bloodgroup varchar(4), email varchar(255), hospital varchar(1024), FOREIGN KEY(email) REFERENCES register(email));
@@ -42,6 +43,7 @@ create table receiver (bloodgroup varchar(4), email varchar(255), hospital varch
 
 ```
 
+**insert value into hospital table**  
 ```
 INSERT INTO hospital(bloodgroup, email, hospital) SELECT "A+",email, "Bavishi Eye Hospital" FROM register  WHERE email='kushal@gmail.com';
 ```
