@@ -64,7 +64,7 @@
             android:layout_marginTop="@dimen/loginViewsMargin"/>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:labelFor="@+id/editTextName"
+            android:labelFor="@+id/receivedate"
             style="@style/parent"
             android:layout_marginRight="20dp"
             android:layout_marginLeft="20dp"

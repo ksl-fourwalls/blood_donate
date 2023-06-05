@@ -4,9 +4,11 @@
 
     <item
         android:id="@+id/search"
-        android:title="Search"
-        app:showAsAction="ifRoom"
-        app:actionViewClass="android.widget.SearchView"
+        android:title="@string/search"
+        android:icon="@drawable/ic_search"
+        android:onClick="searchthings"
+        app:showAsAction="ifRoom|withText"
+
          />
 
     <item

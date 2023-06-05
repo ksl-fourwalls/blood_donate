@@ -1,5 +1,7 @@
 package com.example.project;
 
+import android.annotation.SuppressLint;
+import android.app.DatePickerDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.os.Bundle;
@@ -14,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioButton;
@@ -24,8 +27,10 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
+import androidx.core.view.MenuItemCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
 
 import org.json.JSONException;
@@ -39,6 +44,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -53,6 +59,7 @@ public class MainActivity extends AppCompatActivity  {
     final Handler mHandler = new Handler(Looper.getMainLooper());
     String useremail = null, userpassword = null, username = null, userphoneno = null;
     final String ip = "192.168.1.3";
+    View storeView = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,47 +67,6 @@ public class MainActivity extends AppCompatActivity  {
         signupPage(null);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the options menu from XML
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.top_app_bar_menu, menu);
-
-        // Get the SearchView and set the searchable configuration
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
-        // Assumes current activity is the searchable activity
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
-        searchView.setQueryHint("Search");
-
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            // Override onQueryTextSubmit method which is call when submit query is searched
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                // If the list contains the search query than filter the adapter
-                // using the filter method with the query as its argument
-                /*
-                if (list.contains(query)) {
-                    adapter.getFilter().filter(query);
-                } else {
-                }
-*/
-                    // Search query not found in List View
-                Toast.makeText(MainActivity.this, "Not found", Toast.LENGTH_LONG).show();
-                return false;
-            }
-
-            // This method is overridden to filter the adapter according
-            // to a search query when the user is typing search
-            @Override
-            public boolean onQueryTextChange(String newText) {
-               // adapter.getFilter().filter(newText);
-                return false;
-            }
-        });
-        return super.onCreateOptionsMenu(menu);
-    }
 
     static String readStream(InputStream is) {
         try {
@@ -200,10 +166,45 @@ public class MainActivity extends AppCompatActivity  {
 	});
     }
 
+
+
     public void searchthings(MenuItem item) {
-        if (item.getItemId() == R.id.search)
-            setContentView(R.layout.search_hospital);
+            MaterialToolbar materialToolbar = (MaterialToolbar)findViewById(R.id.topbarmenu);
+
+            if (storeView == null) {
+
+                AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appBarLayout2);
+                AutoCompleteTextView autoCompleteTextView = new AutoCompleteTextView(MainActivity.this);
+
+                // Set layout params
+                AppBarLayout.LayoutParams p = new AppBarLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                autoCompleteTextView.setLayoutParams(p);
+                autoCompleteTextView.setDropDownWidth(ViewGroup.LayoutParams.MATCH_PARENT);     // options are now visible
+
+                // show hospital name
+                AutoHospitals(autoCompleteTextView);
+
+                storeView = materialToolbar.getChildAt(1);
+
+                // remove view add new view
+                materialToolbar.removeView(storeView);
+                materialToolbar.addView(autoCompleteTextView, 1);
+            }
+            else
+            {
+                materialToolbar.removeView(materialToolbar.getChildAt(1));
+                materialToolbar.addView(storeView);
+                storeView = null;
+            }
     }
+
+    private void AutoHospitals(AutoCompleteTextView autoCompleteTextView)
+    {
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_item, hospital.names);
+        autoCompleteTextView.setThreshold(1);
+        autoCompleteTextView.setAdapter(adapter);
+    }
+
 
     public void setNavigator2Home()
     {
@@ -311,27 +312,54 @@ public class MainActivity extends AppCompatActivity  {
 
     }
 
+    private void DateDialogCreate(EditText dateEdit) {
+        dateEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus)
+                    return;
+                final Calendar c = Calendar.getInstance();
+
+                int year = c.get(Calendar.YEAR);
+                int month = c.get(Calendar.MONTH);
+                int day = c.get(Calendar.DAY_OF_MONTH);
+
+                // create date picker dialog
+                DatePickerDialog datePickerDialog = new DatePickerDialog(
+                        MainActivity.this,
+                        new DatePickerDialog.OnDateSetListener() {
+                            @SuppressLint("DefaultLocale")
+                            @Override
+                            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                                dateEdit.setText(String.format("%04d-%02d-%02d", year, (month + 1), dayOfMonth));
+                            }
+                        },
+                        year, month, day);
+                datePickerDialog.show();
+            }
+        });
+    }
+
     public void bookdonorsAppointment(View v) {
         setContentView(R.layout.donors_appointment);
         setNavigator2Home();
 
-
-        process_bg(String.format("http://%s:8000/app.php?donor&email=%s&password=%s",
-				ip, useremail, userpassword), new OnProcessedListener() {
-
-		@Override
-		public void onProcessed(String result) {
-			mHandler.post(new Runnable() {
-                @Override
-                public void run() {}
-			});
-		}
-	});
+        DateDialogCreate((EditText) findViewById(R.id.submitdate));
+        // show hospital name
+        AutoHospitals((AutoCompleteTextView) findViewById(R.id.hospital));
     }
+
+
 
     public void recieverAppointment(View v) {
         setContentView(R.layout.receivers_appointment);
         setNavigator2Home();
+
+        // create date dialog
+        DateDialogCreate((EditText) findViewById(R.id.receivedate));
+
+        // show hospital name
+        AutoHospitals((AutoCompleteTextView) findViewById(R.id.hospital));
 
         Button submitButton = (Button) findViewById(R.id.ReceiverAppointment);
         submitButton.setOnClickListener(new View.OnClickListener() {
@@ -343,8 +371,8 @@ public class MainActivity extends AppCompatActivity  {
                 int idx = radioButtonGroup.indexOfChild(radioButtonGroup.findViewById(radioButtonGroup.getCheckedRadioButtonId()));
                 String selectedtext = ((RadioButton) radioButtonGroup.getChildAt(idx)).getText().toString();
 
-                process_bg(String.format("http://%s:8000/app.php?receiver&email=%s&password=%s",
-                        ip, useremail, userpassword), new OnProcessedListener() {
+                process_bg(String.format("http://%s:8000/app.php?receiver&email=%s&password=%sdateofreceive=%s&hospitalname=%s&bloodgroup",
+                        ip, useremail, userpassword, dateofreceive, hospitalname, selectedtext), new OnProcessedListener() {
 
                     @Override
                     public void onProcessed(String result) {
@@ -354,12 +382,8 @@ public class MainActivity extends AppCompatActivity  {
                         });
                     }
                 });
-
-
             }
         });
-
-
         }
 
     public void showMsgDirectMenuXml(MenuItem item) {
@@ -375,6 +399,12 @@ public class MainActivity extends AppCompatActivity  {
             username = null;
 
             loginTextView(null);
+        }
+        else if (itemid == R.id.search)
+        {
+            DrawerLayout dLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+            dLayout.closeDrawer(GravityCompat.START);
+            searchthings(null);
         }
     }
 
@@ -488,4 +518,158 @@ public class MainActivity extends AppCompatActivity  {
 // signals are send through string
 interface OnProcessedListener {
     public void onProcessed(String result);
+}
+
+
+class hospital{
+    static final String[] names = {
+            "Aarna Superspeciality Hospital",
+            "Anand Surgical Hospital Ltd.",
+            "Apollo Hospitals International Ltd",
+            "Baps Yogiji Maharaj Hospital",
+            "Bavishi Eye Hospital",
+            "Clear Vision Eye Hospital( Unit 1)",
+            "Clear Vision Eye Hospital( Unit 2)",
+            "Clear Vision Eye Hospital( Unit 3)",
+            "Devasya Multispeciality Hospital - Bopal",
+            "Devasya Kidney Hospital - Vadaj",
+            "Divya Jyoti Eye Hospital",
+            "Dr.Sanjay Gandhi Eye Hospital",
+            "Dr. Atul Shah Eye Hospital",
+            "Dr. Saurabh Shah Orthopaedic Hospital",
+            "Eye Care Eye Hospital",
+            "Eye Care Hospital",
+            "Gcs Medical Collage, Hospital And Research ",
+            "Kanoriya Hospital & Reserch Centre",
+            "Karnavati Super Speciality Hospital",
+            "Kiran Surgical Hospital",
+            "Lady Care Women'S Hospital",
+            "Laxmi Hospital & Diagnostic Centre",
+            "Mansarovar Hospital",
+            "Mansi Multi Speciality Hospital",
+            "Max Super Speciality Surgical Hospital",
+            "Natra Raksha Hospital",
+            "P.N.Desai Eye Hospital",
+            "Panchshil Hospital",
+            "Parekhs Hospital",
+            "Parimal Hospital",
+            "Parth Hospital",
+            "Prarthana Surgical & Medical Hospital",
+            "Pushpa Children Hospital & Neonatal Care Centre 2Nd Floor, Nanakram Supre Market, Ramnagar, Sabarmati, Ahmedabad",
+            "Rushabh Medi-Surge Hospital Pvt. Ltd.",
+            "Sahajanand Eye Care Hospital Pvt. Ltd.",
+            "Samata Hospital Pvt. Ltd.",
+            "Sanjivani Eye Hospital & Phaco Centre",
+            "Sanjivani Super Speciality Hospitals Pvt.Ltd.",
+            "Saviour Annexe Hospital",
+            "Shah Hospital",
+            "Shiv Jyoti Eye Hospital",
+            "Shivam Medical Hospital",
+            "Shraddha Surgical Hospital",
+            "Shreeji Heart Care Hospital",
+            "Shreeji Orthopeadic And Ent Hospital",
+            "Siddhi Hospital",
+            "Smruti Hospitals Pvt. Ltd (Unit 1)",
+            "Sushrut Hospital",
+            "Paldi Hospital Pvt. Ltd., 9- A, Vivekanand Society, Mahalaxmi Panch ",
+            "Swapn Healthcare Hospitals Pvt Ltd.",
+            "Tapan Hospital - Bapunagar",
+            "Tapan Hospital - Khokhara",
+            "Tapan Hospital - Vasna",
+            "Dhanvantri Hospital, Opposite Liverpool, Opposite Manan Motors, ",
+            "Tirupati Genaral Hospital",
+            "Utkarsh Hospital",
+            "Aalok Orthocare Hospital",
+            "Clear Vision Eye Hospital( Unit 4)",
+            "Clear Vision Eye Hospital( Unit 5)",
+            "Clear Vision Eye Hospital( Unit 6)",
+            "Hospital)",
+            "Indus Hospital",
+            "J Chirag Hospital",
+            "Kaizan Hospital",
+            "Nidhi Hospital",
+            "Niramay Hospital ",
+            "Param Maternity Gynaec & Surgical Hospital",
+            "Smruti Hospitals Pvt. Ltd (Unit 2)",
+            "Star Hospital – Bapunagar",
+            "Aims Hospital",
+            "Opp L G Hospital, maninagar, Ahmedabad",
+            "Bodyline Hospital",
+            "Cims Hospital",
+            "Hcg Super Speciality Hospital",
+            "Insight Eye Care Hospital",
+            "Hospital",
+            "Medilink Hospital",
+            "Narayana Multispeciality Hospital",
+            "Rathi Hospital",
+            "Sal Hospital",
+            "Satyamev Hospital Pvt Ltd",
+            "Shalby Hospital ",
+            "Shrey Hospital",
+            "Siddhi Vinayak Hospital",
+            "Sterling Hospital",
+            "Zydus Hospital",
+            "Maruti Orthopedic Hospital",
+            "Samved Orthopaedic Hospital",
+            "Samved Hospital, 3rd Floor, Near Sopan Flats, On Stadium Circle to ",
+            "Krishna Surgical Hospital, Naroda",
+            "Nidhi Hospital",
+            "Global Longlife Hospital & Research Pvt. Ltd.",
+            "Shaurya Hospital",
+            "Sanjivani Eye Hospital And Phaco Centre",
+            "203,Satved Complex NR Valus Hospital,Navrangpura,Ahmedabad.",
+            "Niramay Eye Hospital",
+            "Shreeji Eye Hospital & Phaco Centre",
+            "Sanjivani Eye Hospital And Phaco Centre",
+            "1ST Floor,Rudra Complex,Opp Maniben Hospital,Nr Shardaben ",
+            "Hospital,Saraspur,Ahmedabad.",
+            "M Cure Hospital",
+            "Jyoti Eye Hospital",
+            "3Rd Eye Vitreoretina Clinic And Eye Hospital",
+            "3rd eye - The Vitreoretina Clinic & Eye Hospital, 2, Jatin Bungalow, Fire ",
+            "Anand Multi Speciality Hospitals Pvt. Ltd.",
+            "Opp Rajasthan Hospital Shahibaug Ahmedabad.",
+            "Kakadiya Hospital",
+            "Sadbhavna Hospital And Medical Research Center 150 Feet Ring Road ,Gandhigram ,Rajkot",
+            "Parth Orthopedic And Surgical Hospital",
+            "Akshar Hospital",
+            "Om Orthopeadic And Dental Hospital",
+            "Pagarav Hospital",
+            "Shiv Jyoti Eye Hospital",
+            "Kalptaru Hospital",
+            "Chaudhary Hospital",
+            "B T Savani Kidney Hospital",
+            "Arham Eye Hospital And Cornea Care Centre",
+            "Khushi Surgical And Orthopeadic Hospital",
+            "Umiya Orthopeadic And Surgical Hospital",
+            "Aastha Orthopeadic And Spine Hospital",
+            "Astha Orthopeadic Hospital",
+            "Keshubhai Mehta Eye Hospital",
+            "Centre For Sight Eye Hospital",
+            "Aashka Hospitals Pvt Ltd.",
+            "Dr Agarwals Eye Hospital",
+            "Shivalik Multispeciality Hospital",
+            "K D Hospital",
+            "Shifa Multispeciality Hospital",
+            "Ratan Multispeciality Hospital",
+            "Dhruv Eyes Hospital",
+            "Gayatri Hospital and Research Center",
+            "Yashvi Eye Hospital",
+            "Central United Hospital",
+            "Aarna Superspeciality Hospital, Maninagar",
+            "Saavi Women's Hospital",
+            "i-Care Eye Hospital-Rajkot",
+            "Trisha Multispeciality Hospital",
+            "Saviour Hospital",
+            "Clear Vision Eye Hospital-GHODASAR",
+            "Dhruvi ENT Hospital",
+            "Lioness Karnavati Eye Hospital ",
+            "Christ Hospital- Rajkot",
+            "Clear Vision Eye Hospital Pvt Ltd- Bopal ",
+            "HCG Hospitals- Bhavnagar",
+            "Shalya Orthopaedic Hospital and Joint ",
+            "Shalby Hospital-Naroda",
+            "Sheth Shri Pukhraj Raichand General Hospital",
+            "Radiance Hospital"
+    };
 }
