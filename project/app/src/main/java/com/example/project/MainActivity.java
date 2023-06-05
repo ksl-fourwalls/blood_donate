@@ -5,15 +5,19 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,6 +30,7 @@ import com.google.android.material.appbar.MaterialToolbar;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -46,7 +51,6 @@ public class MainActivity extends AppCompatActivity  {
     // and for the Handler that will update the UI from the main thread
     final ExecutorService mExecutor = Executors.newSingleThreadExecutor();
     final Handler mHandler = new Handler(Looper.getMainLooper());
-
     String useremail = null, userpassword = null, username = null, userphoneno = null;
     final String ip = "192.168.1.3";
 
@@ -219,7 +223,7 @@ public class MainActivity extends AppCompatActivity  {
         setContentView(R.layout.emergency_needed);
         setNavigator2Home();
 
-	process_bg(String.format("http://%s:8000/app.php?emergency&email=%s&password=%s", 
+        process_bg(String.format("http://%s:8000/app.php?emergency&email=%s&password=%s",
 				ip, useremail, userpassword), new OnProcessedListener() {
             @Override
             public void onProcessed(String result) {
@@ -311,7 +315,8 @@ public class MainActivity extends AppCompatActivity  {
         setContentView(R.layout.donors_appointment);
         setNavigator2Home();
 
-	process_bg(String.format("http://%s:8000/app.php?donor&email=%s&password=%s", 
+
+        process_bg(String.format("http://%s:8000/app.php?donor&email=%s&password=%s",
 				ip, useremail, userpassword), new OnProcessedListener() {
 
 		@Override
@@ -328,18 +333,34 @@ public class MainActivity extends AppCompatActivity  {
         setContentView(R.layout.receivers_appointment);
         setNavigator2Home();
 
-	process_bg(String.format("http://%s:8000/app.php?receiver&email=%s&password=%s", 
-				ip, useremail, userpassword), new OnProcessedListener() {
+        Button submitButton = (Button) findViewById(R.id.ReceiverAppointment);
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String dateofreceive = ((EditText)findViewById(R.id.receivedate)).getText().toString();
+                String hospitalname = ((AutoCompleteTextView)findViewById(R.id.hospital)).getText().toString();
+                RadioGroup radioButtonGroup = (RadioGroup)findViewById(R.id.whichbloodgroup);
+                int idx = radioButtonGroup.indexOfChild(radioButtonGroup.findViewById(radioButtonGroup.getCheckedRadioButtonId()));
+                String selectedtext = ((RadioButton) radioButtonGroup.getChildAt(idx)).getText().toString();
 
-		@Override
-		public void onProcessed(String result) {
-			mHandler.post(new Runnable() {
-                @Override
-                public void run() {}
-			});
-		}
-	});
-    }
+                process_bg(String.format("http://%s:8000/app.php?receiver&email=%s&password=%s",
+                        ip, useremail, userpassword), new OnProcessedListener() {
+
+                    @Override
+                    public void onProcessed(String result) {
+                        mHandler.post(new Runnable() {
+                            @Override
+                            public void run() {}
+                        });
+                    }
+                });
+
+
+            }
+        });
+
+
+        }
 
     public void showMsgDirectMenuXml(MenuItem item) {
         final int itemid = item.getItemId();
@@ -378,7 +399,7 @@ public class MainActivity extends AppCompatActivity  {
                     return;
                 }
 
-		process_bg(String.format("http://%s:8000/app.php?login&email=%s&password=%s", ip, email, password), 
+                process_bg(String.format("http://%s:8000/app.php?login&email=%s&password=%s", ip, email, password),
 				new OnProcessedListener() {
 		    @Override
 		    public void onProcessed(String result) {
@@ -436,27 +457,27 @@ public class MainActivity extends AppCompatActivity  {
                 }
 
 
-		process_bg(String.format("http://%s:8000/app.php?register&phoneno=%s&password=%s&email=%s&username=%s",
-                                   ip, phoneNumber, password, Email, TextName),  new OnProcessedListener() {
-		    @Override
-		    public void onProcessed(String result) {
-			// Use the handler so we're not trying to update the UI from the bg thread
-			mHandler.post(new Runnable() {
-			    @Override
-			    public void run() {
-				if (result.substring(0, 4).equals("true"))
-				{
-				    useremail = Email;
-				    userpassword = password;
-				    userphoneno = phoneNumber;
-				    username = TextName;
+		        process_bg(String.format("http://%s:8000/app.php?register&phoneno=%s&password=%s&email=%s&username=%s",
+                                           ip, phoneNumber, password, Email, TextName),  new OnProcessedListener() {
+                    @Override
+                    public void onProcessed(String result) {
+                    // Use the handler so we're not trying to update the UI from the bg thread
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (result.substring(0, 4).equals("true"))
+                            {
+                                useremail = Email;
+                                userpassword = password;
+                                userphoneno = phoneNumber;
+                                username = TextName;
 
-				    loginTextView(null);
-				}
-			    }
-			});
-		    }
-		});
+                                HomePage(v);
+                            }
+                        }
+                    });
+		        }
+		        });
             }
         };
         button.setOnClickListener(call_login_page);

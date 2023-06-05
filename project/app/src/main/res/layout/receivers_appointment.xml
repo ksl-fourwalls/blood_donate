@@ -72,7 +72,7 @@
 
 
             <EditText
-                android:id="@+id/editTextName"
+                android:id="@+id/receivedate"
                 style="@style/modifiedEditText"
                 android:hint="Date of Receive"
                 android:importantForAccessibility="no"
@@ -91,15 +91,14 @@
             android:layout_marginLeft="20dp"
             android:layout_marginTop="@dimen/loginViewsMargin">
 
-
-            <EditText
+            <AutoCompleteTextView
                 android:id="@+id/hospital"
                 style="@style/modifiedEditText"
-                android:hint="Hospital"
                 android:importantForAccessibility="no"
                 android:minHeight="48dp"
+                android:hint="Hospital"
+                android:paddingLeft="15dp"
                 android:inputType="textPersonName"
-
                 android:maxLines="1" />
 
         </com.google.android.material.textfield.TextInputLayout >
@@ -120,6 +119,7 @@
             android:layout_height="wrap_content"
             >
             <RadioGroup
+                android:id="@+id/whichbloodgroup"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
@@ -130,40 +130,48 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/a_positive"
+                    android:id="@+id/radio1"
                     />
 
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/a_negative"
+                    android:id="@+id/radio2"
                     />
 
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/b_positive"/>
+                    android:text="@string/b_positive"
+                    android:id="@+id/radio3"/>
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/b_negative"/>
+                    android:text="@string/b_negative"
+                    android:id="@+id/radio4"/>
 
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/ab_positive"/>
+                    android:text="@string/ab_positive"
+                    android:id="@+id/radio5"/>
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/ab_negative"/>
+                    android:text="@string/ab_negative"
+                    android:id="@+id/radio6"/>
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/o_positive"/>
+                    android:text="@string/o_positive"
+                    android:id="@+id/radio7"/>
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_marginRight="40dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/o_negative"/>
+                    android:text="@string/o_negative"
+                    android:id="@+id/radio8"/>
 
             </RadioGroup>
         </HorizontalScrollView>
@@ -171,7 +179,7 @@
 
 
         <Button
-            android:id="@+id/DonorAppointment"
+            android:id="@+id/ReceiverAppointment"
             style="@style/loginButton"
             android:text="Submit"
             android:layout_gravity="right"

@@ -38,6 +38,10 @@ create table receiver (bloodgroup varchar(4), email varchar(255), hospital varch
 
 ```
 
+```
+INSERT INTO hospital(bloodgroup, email, hospital) SELECT "A+",email, "Bavishi Eye Hospital" FROM register  WHERE email='kushal@gmail.com';
+```
+
 
 ---
 Receiver
