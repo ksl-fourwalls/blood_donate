@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity  {
     final ExecutorService mExecutor = Executors.newSingleThreadExecutor();
     final Handler mHandler = new Handler(Looper.getMainLooper());
     String useremail = null, userpassword = null, username = null, userphoneno = null;
-    final String ip = "192.168.1.3";
+    final String ip = "192.168.180.187";
     View storeView = null;
 
     @Override
@@ -290,6 +290,7 @@ public class MainActivity extends AppCompatActivity  {
 
     protected void ChangePassword() {
         setContentView(R.layout.reset_password);
+        setNavigator2Home();
 
         Button submitButton = (Button) findViewById(R.id.changepassword);
         submitButton.setOnClickListener(new View.OnClickListener() {
@@ -387,7 +388,7 @@ public class MainActivity extends AppCompatActivity  {
                 int idx = radioButtonGroup.indexOfChild(radioButtonGroup.findViewById(radioButtonGroup.getCheckedRadioButtonId()));
                 String selectedtext = ((RadioButton) radioButtonGroup.getChildAt(idx)).getText().toString();
 
-                process_bg(String.format("http://%s:8000/app.php?donor&email=%s&password=%sdateofsubmit=%s&hospitalname=%s&bloodgroup=%s",
+                process_bg(String.format("http://%s:8000/app.php?donor&email=%s&password=%s&dateofsubmit=%s&hospitalname=%s&bloodgroup=%s",
                         ip, useremail, userpassword, dateofsubmit, hospitalname, selectedtext), new OnProcessedListener() {
 
                     @Override
@@ -507,9 +508,6 @@ public class MainActivity extends AppCompatActivity  {
 
 				    } catch (JSONException ignored) {}
 				    HomePage(v);
-				}
-				else {
-					Toast.makeText(MainActivity.this, "Invalid cred", Toast.LENGTH_LONG).show();
 				}
 			    }
 			});

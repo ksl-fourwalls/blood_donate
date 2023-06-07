@@ -39,9 +39,9 @@ function userExists()
 if (isset($_REQUEST['register'])) 
 {
 	$sql = sprintf("SELECT email FROM register where email='%s'", htmlspecialchars($_REQUEST["email"]));
-
 	$result = mysqli_query($conn, $sql);
-	if (mysqli_num_rows($result) == 0 && $_REQUEST["email"] != "") {
+
+	if (mysqli_num_rows($result) == 0 && filter_var($_REQUEST["email"], FILTER_VALIDATE_EMAIL)) {
 
 		$sql = sprintf("INSERT INTO register VALUES ('%s', '%s', '%s', '%s')", 
 			$_REQUEST['username'], 
@@ -120,8 +120,9 @@ else if (isset($_REQUEST['emergency']))
 
 else if (isset($_REQUEST['donor']))
 {
+	echo $sql;
 	if (userExists()) {
-		$sql = sprintf("INSERT INTO donor(bloodgroup, email, hospital, dateofsubmit) SELECT '%s',email, '%s', '%s' FROM register  WHERE email='%s'",
+		$sql = sprintf("INSERT INTO donor(bloodgroup, email, hospital, dateofsubmit) SELECT '%s', email, '%s', '%s' FROM register  WHERE email='%s'",
 			$_REQUEST['bloodgroup'], $_REQUEST['hospitalname'], $_REQUEST['dateofsubmit'], $_REQUEST['email']);
 		mysqli_query($conn, $sql);
 	}
