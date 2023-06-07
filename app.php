@@ -80,7 +80,7 @@ else if (isset($_REQUEST["login"]))
 	// execute query
 	mysqli_stmt_execute($stmt);
 
-	$result = mysqli_stmt_get_result($stmt)
+	$result = mysqli_stmt_get_result($stmt);
 	if ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
 		printf ("true %s", json_encode($row));
 	}
@@ -155,7 +155,7 @@ else if (isset($_REQUEST['reset']))
 	if (userExists())
 	{
 		$stmt = mysqli_prepare($conn, "update register set password=? where email=?");
-		mysqli_stmt_bind_param($stmt, "ss", , $_REQUEST['newpassword'], $_REQUEST['email']);
+		mysqli_stmt_bind_param($stmt, "ss", $_REQUEST['newpassword'], $_REQUEST['email']);
 		mysqli_stmt_execute($stmt);
 	}
 }
