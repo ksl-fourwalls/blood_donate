@@ -21,14 +21,21 @@ function userExists()
 	if ($email == "" && $password == "")
 		return false;
 
-	// check for existance of password
-	$sql = sprintf("SELECT email, password FROM register where email='%s' AND password='%s'", 
-		$email, 
-		$password);
+	$stmt = mysqli_prepare($GLOBALS['conn'], "SELECT email, password FROM register where email=? AND password=?");
+	mysqli_stmt_bind_param($stmt, 'ss', $email, $password);
+
+	mysqli_stmt_execute($stmt);
+
+	/* store the result in an internal buffer */
+	mysqli_stmt_store_result($stmt);
+	$count = mysqli_stmt_num_rows($stmt);
+
+	// free memory for object associated
+	// with stmt object
+	mysqli_stmt_free_result($stmt);
 
 	// verify user
-	$result = mysqli_query($GLOBALS['conn'], $sql);
-	if (mysqli_num_rows($result) != 1)
+	if ($count != 1)
 		return false;
 	return true;
 }
@@ -38,48 +45,56 @@ function userExists()
 // if register page is called
 if (isset($_REQUEST['register'])) 
 {
-	$sql = sprintf("SELECT email FROM register where email='%s'", htmlspecialchars($_REQUEST["email"]));
-	$result = mysqli_query($conn, $sql);
+	$stmt = mysqli_prepare($conn, "SELECT email FROM register where email=?");
+	mysqli_stmt_bind_param($stmt, 's', $_REQUEST['email']);
 
-	if (mysqli_num_rows($result) == 0 && filter_var($_REQUEST["email"], FILTER_VALIDATE_EMAIL)) {
+	mysqli_stmt_execute($stmt);
 
-		$sql = sprintf("INSERT INTO register VALUES ('%s', '%s', '%s', '%s')", 
+	// store the result in an internal buffer
+	mysqli_stmt_store_result($stmt);
+
+	if (mysqli_stmt_num_rows($stmt) == 0 && filter_var($_REQUEST["email"], FILTER_VALIDATE_EMAIL)) {
+
+
+		$stmt1 = mysqli_prepare($conn, "INSERT INTO register VALUES (?, ?, ?, ?)");
+		mysqli_stmt_bind_param($stmt1, 'ssss', 
 			$_REQUEST['username'], 
 			$_REQUEST['email'], 
 			$_REQUEST['phoneno'], 
 			$_REQUEST['password']);
 
-		mysqli_query($conn, $sql);
+		mysqli_stmt_execute($stmt1);
 		echo "true";
 	}
 	else {
 		echo "false";
 	}
-	mysqli_free_result($result);
+	mysqli_stmt_free_result($stmt);
 }
 
 else if (isset($_REQUEST["login"]))
 {
-	$sql = sprintf("SELECT * FROM register where email='%s' AND password='%s'", 
-		htmlspecialchars($_REQUEST["email"]), 
-		htmlspecialchars($_REQUEST['password']));
+	$stmt = mysqli_prepare($conn, "SELECT * FROM register where email=? AND password=?");
+	mysqli_stmt_bind_param($stmt, 'ss', $_REQUEST['email'], $_REQUEST['password']);
 
-	$result = mysqli_query($conn, $sql);
-	if (mysqli_num_rows($result) == 1) {
-		$row = mysqli_fetch_array($result, MYSQLI_ASSOC);
+	// execute query
+	mysqli_stmt_execute($stmt);
+
+	$result = mysqli_stmt_get_result($stmt)
+	if ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
 		printf ("true %s", json_encode($row));
 	}
 	else {
 		echo "false";
 	}
-	mysqli_free_result($result);
 }
 
 // TODO: https://stackoverflow.com/questions/18383182/mysql-table-with-a-varchar-column-as-foreign-key
 else if (isset($_REQUEST['hospital']))
 {
 	if (userExists()) {
-		$sql = sprintf("SELECT bloodgroup, COUNT(*) as total FROM hospital GROUP BY bloodgroup");
+
+		$sql = "SELECT bloodgroup, COUNT(*) as total FROM hospital GROUP BY bloodgroup";
 		$result = mysqli_query($conn, $sql);
 
 		$bloodgroupdata = array();
@@ -101,18 +116,16 @@ else if (isset($_REQUEST['emergency']))
 {
 	if (userExists())
 	{
-		$sql = sprintf("SELECT hospital, bloodgroup FROM receiver where dateofreceive='%s'", date('Y-m-d')); 
-		$result = mysqli_query($conn, $sql);
+		$stmt = mysqli_prepare("SELECT hospital, bloodgroup FROM receiver where dateofreceive=?");
+		mysqli_stmt_bind_param($stmt, 's', date('Y-m-d'));
+
+		mysqli_stmt_execute($stmt);
 
 		$emergencyneeded = array();
+		$result = mysqli_stmt_get_result($stmt);
+		while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC))
+			$emergencyneeded[$row["hospital"]] = $row["bloodgroup"];
 
-		if (mysqli_num_rows($result) > 0)
-		{
-			$rows = mysqli_fetch_all($result, MYSQLI_ASSOC);
-			foreach($rows as $row) {
-				$emergencyneeded[$row["hospital"]] = $row["bloodgroup"];
-			}
-		}
 		printf("true %s", json_encode($emergencyneeded));
 	}
 	else { echo "false"; }
@@ -122,18 +135,18 @@ else if (isset($_REQUEST['donor']))
 {
 	echo $sql;
 	if (userExists()) {
-		$sql = sprintf("INSERT INTO donor(bloodgroup, email, hospital, dateofsubmit) SELECT '%s', email, '%s', '%s' FROM register  WHERE email='%s'",
-			$_REQUEST['bloodgroup'], $_REQUEST['hospitalname'], $_REQUEST['dateofsubmit'], $_REQUEST['email']);
-		mysqli_query($conn, $sql);
+		$stmt = mysqli_prepare($conn, "INSERT INTO donor(bloodgroup, email, hospital, dateofsubmit) SELECT ?, email, ?, ? FROM register  WHERE email=?");
+		mysqli_stmt_bind_param($stmt, "ssss", $_REQUEST['bloodgroup'], $_REQUEST['hospitalname'], $_REQUEST['dateofsubmit'], $_REQUEST['email']);
+		mysqli_stmt_execute($stmt);
 	}
 }
 
 else if (isset($_REQUEST['receiver']))
 {
 	if (userExists()) {
-		$sql = sprintf("INSERT INTO receiver(bloodgroup, email, hospital, dateofreceive) SELECT '%s',email, '%s', '%s' FROM register  WHERE email='%s'",
-			$_REQUEST['bloodgroup'], $_REQUEST['hospitalname'], $_REQUEST['dateofreceive'], $_REQUEST['email']);
-		mysqli_query($conn, $sql);
+		$stmt = mysqli_prepare($conn, "INSERT INTO receiver(bloodgroup, email, hospital, dateofreceive) SELECT ?,email, ?, ? FROM register  WHERE email=?");
+		mysqli_stmt_bind_param($stmt, "ssss", $_REQUEST['bloodgroup'], $_REQUEST['hospitalname'], $_REQUEST['dateofreceive'], $_REQUEST['email']);
+		mysqli_stmt_execute($stmt);
 	}
 }
 
@@ -141,15 +154,10 @@ else if (isset($_REQUEST['reset']))
 {
 	if (userExists())
 	{
-		$sql = sprintf("update register set password='%s' where email='%s'", $_REQUEST['newpassword'], $_REQUEST['email']);
-		mysqli_query($conn, $sql);
+		$stmt = mysqli_prepare($conn, "update register set password=? where email=?");
+		mysqli_stmt_bind_param($stmt, "ss", , $_REQUEST['newpassword'], $_REQUEST['email']);
+		mysqli_stmt_execute($stmt);
 	}
-}
-
-// update hospital table
-else if (isset($_REQUEST['adminuser']))
-{
-
 }
 
 else if (isset($_REQUEST['test']))
