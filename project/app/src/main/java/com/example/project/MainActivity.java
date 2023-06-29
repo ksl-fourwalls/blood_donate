@@ -39,9 +39,11 @@ import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -49,6 +51,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -61,7 +64,7 @@ public class MainActivity extends AppCompatActivity  {
     final ExecutorService mExecutor = Executors.newSingleThreadExecutor();
     final Handler mHandler = new Handler(Looper.getMainLooper());
     String useremail = null, userpassword = null, username = null, userphoneno = null;
-    final String ip = "192.168.1.3";
+    final String ip = "192.168.13.187";
     View storeView = null;
 
     @Override
@@ -207,9 +210,36 @@ public class MainActivity extends AppCompatActivity  {
             }
     }
 
+    private ArrayList<String> getHospitalNames() {
+        BufferedReader reader = null;
+        ArrayList<String> HospitalNames = new ArrayList<>();
+        try {
+            reader = new BufferedReader(
+                    new InputStreamReader(getAssets().open("hospitals")));
+
+            // do reading, usually loop until end of file reading
+            String mLine;
+            while ((mLine = reader.readLine()) != null) {
+                //process line
+                HospitalNames.add(mLine);
+            }
+        } catch (IOException e) {
+            //log the exception
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    //log the exception
+                }
+            }
+        }
+        return HospitalNames;
+    }
+
     private void AutoHospitals(AutoCompleteTextView autoCompleteTextView)
     {
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_item, hospital.names);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_item, getHospitalNames());
         autoCompleteTextView.setThreshold(1);
         autoCompleteTextView.setAdapter(adapter);
     }
@@ -589,156 +619,3 @@ interface OnProcessedListener {
     public void onProcessed(String result);
 }
 
-
-class hospital{
-    static final String[] names = {
-            "Aarna Superspeciality Hospital",
-            "Anand Surgical Hospital Ltd.",
-            "Apollo Hospitals International Ltd",
-            "Baps Yogiji Maharaj Hospital",
-            "Bavishi Eye Hospital",
-            "Clear Vision Eye Hospital( Unit 1)",
-            "Clear Vision Eye Hospital( Unit 2)",
-            "Clear Vision Eye Hospital( Unit 3)",
-            "Devasya Multispeciality Hospital - Bopal",
-            "Devasya Kidney Hospital - Vadaj",
-            "Divya Jyoti Eye Hospital",
-            "Dr.Sanjay Gandhi Eye Hospital",
-            "Dr. Atul Shah Eye Hospital",
-            "Dr. Saurabh Shah Orthopaedic Hospital",
-            "Eye Care Eye Hospital",
-            "Eye Care Hospital",
-            "Gcs Medical Collage, Hospital And Research ",
-            "Kanoriya Hospital & Reserch Centre",
-            "Karnavati Super Speciality Hospital",
-            "Kiran Surgical Hospital",
-            "Lady Care Women'S Hospital",
-            "Laxmi Hospital & Diagnostic Centre",
-            "Mansarovar Hospital",
-            "Mansi Multi Speciality Hospital",
-            "Max Super Speciality Surgical Hospital",
-            "Natra Raksha Hospital",
-            "P.N.Desai Eye Hospital",
-            "Panchshil Hospital",
-            "Parekhs Hospital",
-            "Parimal Hospital",
-            "Parth Hospital",
-            "Prarthana Surgical & Medical Hospital",
-            "Pushpa Children Hospital & Neonatal Care Centre 2Nd Floor, Nanakram Supre Market, Ramnagar, Sabarmati, Ahmedabad",
-            "Rushabh Medi-Surge Hospital Pvt. Ltd.",
-            "Sahajanand Eye Care Hospital Pvt. Ltd.",
-            "Samata Hospital Pvt. Ltd.",
-            "Sanjivani Eye Hospital & Phaco Centre",
-            "Sanjivani Super Speciality Hospitals Pvt.Ltd.",
-            "Saviour Annexe Hospital",
-            "Shah Hospital",
-            "Shiv Jyoti Eye Hospital",
-            "Shivam Medical Hospital",
-            "Shraddha Surgical Hospital",
-            "Shreeji Heart Care Hospital",
-            "Shreeji Orthopeadic And Ent Hospital",
-            "Siddhi Hospital",
-            "Smruti Hospitals Pvt. Ltd (Unit 1)",
-            "Sushrut Hospital",
-            "Paldi Hospital Pvt. Ltd., 9- A, Vivekanand Society, Mahalaxmi Panch ",
-            "Swapn Healthcare Hospitals Pvt Ltd.",
-            "Tapan Hospital - Bapunagar",
-            "Tapan Hospital - Khokhara",
-            "Tapan Hospital - Vasna",
-            "Dhanvantri Hospital, Opposite Liverpool, Opposite Manan Motors, ",
-            "Tirupati Genaral Hospital",
-            "Utkarsh Hospital",
-            "Aalok Orthocare Hospital",
-            "Clear Vision Eye Hospital( Unit 4)",
-            "Clear Vision Eye Hospital( Unit 5)",
-            "Clear Vision Eye Hospital( Unit 6)",
-            "Hospital)",
-            "Indus Hospital",
-            "J Chirag Hospital",
-            "Kaizan Hospital",
-            "Nidhi Hospital",
-            "Niramay Hospital ",
-            "Param Maternity Gynaec & Surgical Hospital",
-            "Smruti Hospitals Pvt. Ltd (Unit 2)",
-            "Star Hospital – Bapunagar",
-            "Aims Hospital",
-            "Opp L G Hospital, maninagar, Ahmedabad",
-            "Bodyline Hospital",
-            "Cims Hospital",
-            "Hcg Super Speciality Hospital",
-            "Insight Eye Care Hospital",
-            "Hospital",
-            "Medilink Hospital",
-            "Narayana Multispeciality Hospital",
-            "Rathi Hospital",
-            "Sal Hospital",
-            "Satyamev Hospital Pvt Ltd",
-            "Shalby Hospital ",
-            "Shrey Hospital",
-            "Siddhi Vinayak Hospital",
-            "Sterling Hospital",
-            "Zydus Hospital",
-            "Maruti Orthopedic Hospital",
-            "Samved Orthopaedic Hospital",
-            "Samved Hospital, 3rd Floor, Near Sopan Flats, On Stadium Circle to ",
-            "Krishna Surgical Hospital, Naroda",
-            "Nidhi Hospital",
-            "Global Longlife Hospital & Research Pvt. Ltd.",
-            "Shaurya Hospital",
-            "Sanjivani Eye Hospital And Phaco Centre",
-            "203,Satved Complex NR Valus Hospital,Navrangpura,Ahmedabad.",
-            "Niramay Eye Hospital",
-            "Shreeji Eye Hospital & Phaco Centre",
-            "Sanjivani Eye Hospital And Phaco Centre",
-            "1ST Floor,Rudra Complex,Opp Maniben Hospital,Nr Shardaben ",
-            "Hospital,Saraspur,Ahmedabad.",
-            "M Cure Hospital",
-            "Jyoti Eye Hospital",
-            "3Rd Eye Vitreoretina Clinic And Eye Hospital",
-            "3rd eye - The Vitreoretina Clinic & Eye Hospital, 2, Jatin Bungalow, Fire ",
-            "Anand Multi Speciality Hospitals Pvt. Ltd.",
-            "Opp Rajasthan Hospital Shahibaug Ahmedabad.",
-            "Kakadiya Hospital",
-            "Sadbhavna Hospital And Medical Research Center 150 Feet Ring Road ,Gandhigram ,Rajkot",
-            "Parth Orthopedic And Surgical Hospital",
-            "Akshar Hospital",
-            "Om Orthopeadic And Dental Hospital",
-            "Pagarav Hospital",
-            "Shiv Jyoti Eye Hospital",
-            "Kalptaru Hospital",
-            "Chaudhary Hospital",
-            "B T Savani Kidney Hospital",
-            "Arham Eye Hospital And Cornea Care Centre",
-            "Khushi Surgical And Orthopeadic Hospital",
-            "Umiya Orthopeadic And Surgical Hospital",
-            "Aastha Orthopeadic And Spine Hospital",
-            "Astha Orthopeadic Hospital",
-            "Keshubhai Mehta Eye Hospital",
-            "Centre For Sight Eye Hospital",
-            "Aashka Hospitals Pvt Ltd.",
-            "Dr Agarwals Eye Hospital",
-            "Shivalik Multispeciality Hospital",
-            "K D Hospital",
-            "Shifa Multispeciality Hospital",
-            "Ratan Multispeciality Hospital",
-            "Dhruv Eyes Hospital",
-            "Gayatri Hospital and Research Center",
-            "Yashvi Eye Hospital",
-            "Central United Hospital",
-            "Aarna Superspeciality Hospital, Maninagar",
-            "Saavi Women's Hospital",
-            "i-Care Eye Hospital-Rajkot",
-            "Trisha Multispeciality Hospital",
-            "Saviour Hospital",
-            "Clear Vision Eye Hospital-GHODASAR",
-            "Dhruvi ENT Hospital",
-            "Lioness Karnavati Eye Hospital ",
-            "Christ Hospital- Rajkot",
-            "Clear Vision Eye Hospital Pvt Ltd- Bopal ",
-            "HCG Hospitals- Bhavnagar",
-            "Shalya Orthopaedic Hospital and Joint ",
-            "Shalby Hospital-Naroda",
-            "Sheth Shri Pukhraj Raichand General Hospital",
-            "Radiance Hospital"
-    };
-}
