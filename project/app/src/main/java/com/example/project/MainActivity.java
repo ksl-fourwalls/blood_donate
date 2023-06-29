@@ -44,8 +44,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -59,7 +61,7 @@ public class MainActivity extends AppCompatActivity  {
     final ExecutorService mExecutor = Executors.newSingleThreadExecutor();
     final Handler mHandler = new Handler(Looper.getMainLooper());
     String useremail = null, userpassword = null, username = null, userphoneno = null;
-    final String ip = "192.168.180.187";
+    final String ip = "192.168.1.3";
     View storeView = null;
 
     @Override
@@ -361,7 +363,14 @@ public class MainActivity extends AppCompatActivity  {
                             @SuppressLint("DefaultLocale")
                             @Override
                             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                                dateEdit.setText(String.format("%04d-%02d-%02d", year, (month + 1), dayOfMonth));
+                                Calendar c1 = Calendar.getInstance();
+                                c1.set(year, month+1, dayOfMonth);
+                                if (!c1.before(c))
+                                    dateEdit.setText(String.format("%04d-%02d-%02d", year, month+1, dayOfMonth));
+                                else {
+                                    dateEdit.setText(String.format("%04d-%02d-%02d",
+                                            c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)));
+                                }
                             }
                         },
                         year, month, day);
