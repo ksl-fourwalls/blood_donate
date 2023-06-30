@@ -4,7 +4,6 @@ $username = "user";
 $password = "password";
 $dbname = "hospital";
 
-// TODO: Make Resistant from SQL Injection
 // Create connection
 $conn = mysqli_connect($servername, $username, $password, $dbname);
 
