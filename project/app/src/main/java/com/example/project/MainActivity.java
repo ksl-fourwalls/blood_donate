@@ -46,6 +46,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -64,7 +65,7 @@ public class MainActivity extends AppCompatActivity  {
     final ExecutorService mExecutor = Executors.newSingleThreadExecutor();
     final Handler mHandler = new Handler(Looper.getMainLooper());
     String useremail = null, userpassword = null, username = null, userphoneno = null;
-    final String ip = "192.168.13.187";
+    final String ip = "192.168.43.20";
     View storeView = null;
 
     @Override
@@ -376,11 +377,31 @@ public class MainActivity extends AppCompatActivity  {
 
     private void DateDialogCreate(EditText dateEdit) {
         dateEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @SuppressLint("DefaultLocale")
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus)
+                {
+                    @SuppressLint("SimpleDateFormat")
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    try {
+                        String m_str = dateEdit.getText().toString();
+                        Date date = simpleDateFormat.parse(dateEdit.getText().toString());
+                        Calendar c = Calendar.getInstance();
+                        Calendar c1 = Calendar.getInstance();
+                        if (date != null)
+                            c1.setTime(date);
+
+                        // compare date
+                        if (c1.compareTo(c) == -1)
+                            dateEdit.setText(String.format("%04d-%02d-%02d", c.get(Calendar.YEAR), c.get(Calendar.MONTH)+1, c.get(Calendar.DAY_OF_MONTH)));
+                    }
+                    catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
                     return;
-                final Calendar c = Calendar.getInstance();
+                }
+                    final Calendar c = Calendar.getInstance();
 
                 int year = c.get(Calendar.YEAR);
                 int month = c.get(Calendar.MONTH);
@@ -393,14 +414,8 @@ public class MainActivity extends AppCompatActivity  {
                             @SuppressLint("DefaultLocale")
                             @Override
                             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                                Calendar c1 = Calendar.getInstance();
-                                c1.set(year, month+1, dayOfMonth);
-                                if (!c1.before(c))
-                                    dateEdit.setText(String.format("%04d-%02d-%02d", year, month+1, dayOfMonth));
-                                else {
-                                    dateEdit.setText(String.format("%04d-%02d-%02d",
-                                            c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)));
-                                }
+
+                                dateEdit.setText(String.format("%04d-%02d-%02d", year, month+1, dayOfMonth));
                             }
                         },
                         year, month, day);
