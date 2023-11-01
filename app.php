@@ -116,7 +116,8 @@ else if (isset($_REQUEST['emergency']))
 	if (userExists())
 	{
 		$stmt = mysqli_prepare($conn, "SELECT hospital, bloodgroup FROM receiver where dateofreceive=?");
-		mysqli_stmt_bind_param($stmt, 's', date('Y-m-d'));
+		$dateofreceiver = date('Y-m-d');
+		mysqli_stmt_bind_param($stmt, 's', $dateofreceiver);
 
 		mysqli_stmt_execute($stmt);
 
